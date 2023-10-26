@@ -1,0 +1,16 @@
+button.standard {
+	--color: inherit;
+	border-color: transparent;
+	&:focus,
+	&:hover {
+		background-color: var(--primary-focus);
+	}
+}
+
+button.icon {
+    display: grid;
+    background: none;
+    width: unset;
+    margin: unset;
+    padding: calc(var(--spacing) / 2);
+}

@@ -28,13 +28,13 @@
 			<li>
 				<iconify-icon icon={getIcon(type)} width="36" height="36" />
 				<span>{name}</span>
-				<button class="icon-button">
+				<button class="standard icon">
 					<iconify-icon icon="ic:baseline-more-vert" width="36" height="36" />
 				</button>
 			</li>
 		{/each}
 	</ul>
-	<pre>{JSON.stringify(data.fileList, null, 2)}</pre>
+	<!-- <pre>{JSON.stringify(data.fileList, null, 2)}</pre> -->
 </main>
 
 <style lang="scss">
@@ -55,19 +55,6 @@
 		}
 		span {
 			flex-grow: 1;
-		}
-	}
-	.icon-button {
-		--color: inherit;
-		display: grid;
-		background: none;
-		border-color: transparent;
-		width: unset;
-		margin: unset;
-		padding: calc(var(--spacing) / 2);
-		&:focus,
-		&:hover {
-			background-color: var(--primary-focus);
 		}
 	}
 </style>
