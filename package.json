@@ -15,6 +15,7 @@
 	"devDependencies": {
 		"@sveltejs/adapter-auto": "^2.0.0",
 		"@sveltejs/kit": "^1.20.4",
+		"@types/mime": "^3.0.3",
 		"@typescript-eslint/eslint-plugin": "^6.0.0",
 		"@typescript-eslint/parser": "^6.0.0",
 		"eslint": "^8.28.0",
@@ -33,6 +34,7 @@
 	"type": "module",
 	"dependencies": {
 		"@picocss/pico": "^1.5.10",
-		"iconify-icon": "^1.0.8"
+		"iconify-icon": "^1.0.8",
+		"mime": "^3.0.0"
 	}
 }
