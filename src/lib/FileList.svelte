@@ -38,6 +38,9 @@
 </ul>
 
 <style lang="scss">
+	ul {
+		padding: calc(var(--spacing) / 2)
+	}
 	li {
 		list-style: none;
 		display: flex;
