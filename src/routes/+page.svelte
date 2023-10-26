@@ -26,8 +26,10 @@
 	<ul>
 		{#each data.fileList as { name, type }, i}
 			<li>
-				<iconify-icon icon={getIcon(type)} width="36" height="36" />
-				<span>{name}</span>
+				<a href="{name}">
+					<iconify-icon icon={getIcon(type)} width="36" height="36" />
+					<span>{name}</span>
+				</a>
 				<button class="standard icon">
 					<iconify-icon icon="ic:baseline-more-vert" width="36" height="36" />
 				</button>
@@ -44,17 +46,22 @@
 	li {
 		list-style: none;
 		display: flex;
-		align-items: center;
-		padding-left: var(--spacing);
-		gap: var(--spacing);
 		border-radius: var(--border-radius);
-		cursor: pointer;
 		&:hover,
 		&:focus-within {
 			background-color: var(--secondary-focus);
 		}
-		span {
+		a {
 			flex-grow: 1;
+			display: flex;
+			align-items: center;
+			gap: var(--spacing);
+			padding: 0 var(--spacing);
+			--color: inherit;
+			&:hover,
+			&:focus {
+				text-decoration: unset;
+			}
 		}
 	}
 </style>
