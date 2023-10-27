@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { backTarget, title } from '$lib/stores';
+	import '@picocss/pico/css/pico.min.css';
 	import 'iconify-icon';
 	import '../app.scss';
 </script>

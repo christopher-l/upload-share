@@ -1,13 +1,13 @@
 import { isDirectory, listSubDir, type FileEntry } from '$lib/server/filesystem';
 import { redirect } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
+import { getPath } from '../../../lib/utils';
 
 export const load: PageServerLoad<{ fileList: FileEntry[] }> = async ({ params }) => {
-	if (params.file) {
-		throw redirect(302, `/${params.link}/${params.file}/preview`);
-	} else if (await isDirectory(params.link)) {
-		return { fileList: await listSubDir(params.link) };
+	const path = getPath(params);
+	if (await isDirectory(path)) {
+		return { fileList: await listSubDir(path) };
 	} else {
-		throw redirect(302, `/${params.link}/preview`);
+		throw redirect(302, `/${path}/preview`);
 	}
 };

@@ -3,7 +3,7 @@
 	import { page } from '$app/stores';
 
 	export let fileList: FileEntry[];
-	const prefix = $page.url.pathname === '/' ? '/' : $page.url.pathname + '/';
+	$: prefix = $page.url.pathname === '/' ? '/' : $page.url.pathname + '/';
 
 	const iconMap = {
 		'inode/directory': 'mdi:folder',

@@ -12,7 +12,7 @@ export async function listRootDir(): Promise<FileEntry[]> {
 }
 
 export async function listSubDir(path: string): Promise<FileEntry[]> {
-	return (await _listFiles(path)).filter((file) => file.type !== 'inode/directory');
+	return await _listFiles(path);
 }
 
 async function _listFiles(path: string): Promise<FileEntry[]> {
