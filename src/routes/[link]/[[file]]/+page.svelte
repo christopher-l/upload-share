@@ -2,7 +2,7 @@
 	import { page } from '$app/stores';
 	import FileList from '$lib/FileList.svelte';
 	import { backTarget, title } from '$lib/stores';
-	import type { PageData } from './$types';
+	import type { PageData } from '../$types';
 
 	export let data: PageData;
 

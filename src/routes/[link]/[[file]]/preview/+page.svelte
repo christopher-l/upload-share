@@ -4,7 +4,7 @@
 
 	let link = $page.params.link;
 	let file = $page.params.file;
-	title.set(link);
+	title.set(`${link}/${file}`);
 	if (file) {
 		backTarget.set(`/${link}`);
 	} else {

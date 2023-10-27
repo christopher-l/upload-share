@@ -3,9 +3,11 @@ import { redirect } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
 
 export const load: PageServerLoad<{ fileList: FileEntry[] }> = async ({ params }) => {
-	if (await isDirectory(params.link)) {
+	if (params.file) {
+		throw redirect(302, `/${params.link}/${params.file}/preview`);
+	} else if (await isDirectory(params.link)) {
 		return { fileList: await listSubDir(params.link) };
 	} else {
-		throw redirect(302, params.link + '/preview');
+		throw redirect(302, `/${params.link}/preview`);
 	}
 };
