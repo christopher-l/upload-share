@@ -3,6 +3,9 @@
 	import '@picocss/pico/css/pico.min.css';
 	import 'iconify-icon';
 	import '../app.scss';
+	import type { PageData } from './$types';
+
+	export let data: PageData;
 </script>
 
 <header>
@@ -14,7 +17,7 @@
 				</a>
 			{/if}
 		</div>
-		<h1>{$title}</h1>
+		<h1>{data.filePath.length ? data.filePath.join('/') : 'HOME'}</h1>
 		<div />
 	</nav>
 </header>

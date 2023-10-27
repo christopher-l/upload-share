@@ -15,6 +15,14 @@
 		other: 'mdi:file'
 	};
 
+	function getHref(file: FileEntry): string {
+		if ($page.url.pathname === '/') {
+			return file.token as string;
+		} else {
+			return $page.url.pathname + '/' + file.name;
+		}
+	}
+
 	function getIcon(type: string | null): string {
 		const baseType = type?.split('/', 1)?.[0];
 		return (
@@ -26,11 +34,11 @@
 </script>
 
 <ul>
-	{#each fileList as { name, type }, i}
+	{#each fileList as file}
 		<li>
-			<a href={prefix + name}>
-				<iconify-icon icon={getIcon(type)} width="36" height="36" />
-				<span>{name}</span>
+			<a href={getHref(file)}>
+				<iconify-icon icon={getIcon(file.type)} width="36" height="36" />
+				<span>{file.name}</span>
 			</a>
 			<button class="standard icon">
 				<iconify-icon icon="ic:baseline-more-vert" width="36" height="36" />

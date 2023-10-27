@@ -1,14 +1,20 @@
 import { lstat, readdir } from 'fs/promises';
 import { getType } from 'mime';
 import { join } from 'path';
+import { getToken } from './tokens';
 
 export interface FileEntry {
 	name: string;
 	type: string | null;
+	token?: string;
 }
 
 export async function listRootDir(): Promise<FileEntry[]> {
-	return _listFiles('.');
+	const list = await _listFiles('.');
+	for (const file of list) {
+		file.token = await getToken(file.name);
+	}
+	return list;
 }
 
 export async function listSubDir(path: string): Promise<FileEntry[]> {
