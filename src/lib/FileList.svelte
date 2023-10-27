@@ -1,7 +1,9 @@
 <script lang="ts">
 	import type { FileEntry } from './server/filesystem';
+	import { page } from '$app/stores';
 
 	export let fileList: FileEntry[];
+	const prefix = $page.url.pathname === '/' ? '/' : $page.url.pathname + '/';
 
 	const iconMap = {
 		'inode/directory': 'mdi:folder',
@@ -26,7 +28,7 @@
 <ul>
 	{#each fileList as { name, type }, i}
 		<li>
-			<a href={name}>
+			<a href={prefix + name}>
 				<iconify-icon icon={getIcon(type)} width="36" height="36" />
 				<span>{name}</span>
 			</a>
@@ -39,7 +41,7 @@
 
 <style lang="scss">
 	ul {
-		padding: calc(var(--spacing) / 2)
+		padding: calc(var(--spacing) / 2);
 	}
 	li {
 		list-style: none;

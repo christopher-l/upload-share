@@ -7,9 +7,15 @@ export interface FileEntry {
 	type: string | null;
 }
 
-export async function listFiles(path: string): Promise<FileEntry[]> {
-	console.log('listFiles', path);
+export async function listRootDir(): Promise<FileEntry[]> {
+	return _listFiles('.');
+}
 
+export async function listSubDir(path: string): Promise<FileEntry[]> {
+	return (await _listFiles(path)).filter((file) => file.type !== 'inode/directory');
+}
+
+async function _listFiles(path: string): Promise<FileEntry[]> {
 	const files = await readdir(path);
 	const stats = await Promise.all(files.map((file) => lstat(join(path, file))));
 
