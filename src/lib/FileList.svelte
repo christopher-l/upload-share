@@ -3,7 +3,6 @@
 	import { page } from '$app/stores';
 
 	export let fileList: FileEntry[];
-	$: prefix = $page.url.pathname === '/' ? '/' : $page.url.pathname + '/';
 
 	const iconMap = {
 		'inode/directory': 'mdi:folder',
@@ -15,12 +14,11 @@
 		other: 'mdi:file'
 	};
 
-	function getHref(file: FileEntry): string {
-		if ($page.url.pathname === '/') {
-			return file.token as string;
-		} else {
-			return $page.url.pathname + '/' + file.name;
-		}
+	let getHref: (file: FileEntry) => string;
+	$: if ($page.url.pathname === '/') {
+		getHref = (file) => file.token as string;
+	} else {
+		getHref = (file) => $page.url.pathname + '/' + file.name;
 	}
 
 	function getIcon(type: string | null): string {

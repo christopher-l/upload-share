@@ -7,7 +7,7 @@ let cachedTokens: Promise<Tokens> | null = null;
 
 const tokensFile = '.tokens.json';
 
-export async function getPath(token: string): Promise<string> {
+export async function getPathForToken(token: string): Promise<string> {
 	const tokens = await getTokens();
 	return tokens[token];
 }

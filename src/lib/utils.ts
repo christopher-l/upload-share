@@ -1,4 +1,4 @@
-export function getPath(params: { token: string; path: string }): string {
+export function getUrlPath(params: { token: string; path: string }): string {
 	let path = params.token;
 	if (params.path) {
 		path += '/' + params.path;
