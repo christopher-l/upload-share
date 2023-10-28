@@ -1,3 +1,4 @@
+import { TOKENS_FILE } from '$env/static/private';
 import { lstat, readFile, writeFile } from 'fs/promises';
 
 /**
@@ -20,13 +21,8 @@ type Tokens = { [token: string]: string | undefined };
 let cachedTokens: Promise<Tokens> | null = null;
 
 /**
- * The filename of the tokens map on disk.
- */
-const tokensFile = '.tokens.json';
-
-/**
  * Returns the root-level path that corresponds to the given token.
- * 
+ *
  * Returns `null` if the given token is not mapped.
  */
 export async function getPathForToken(token: string): Promise<string | null> {
@@ -36,7 +32,7 @@ export async function getPathForToken(token: string): Promise<string | null> {
 
 /**
  * Returns the token that corresponds to the given root-level path.
- * 
+ *
  * If the given path has no token yet, generates a token and saves it to the map.
  */
 export async function getToken(path: string): Promise<string> {
@@ -58,12 +54,12 @@ function generateToken(): string {
 	const bytes = new Uint8Array(length);
 	crypto.getRandomValues(bytes);
 	const base64 = btoa(String.fromCharCode(...bytes));
-	return base64.replace(/\//g, '-').replace(/=/g, '');
+	return base64.replaceAll('/', '-').replaceAll('=', '');
 }
 
 /**
  * Returns the cached tokens map.
- * 
+ *
  * When first called, reads the map from disk.
  */
 async function getTokens(): Promise<Tokens> {
@@ -75,20 +71,20 @@ async function getTokens(): Promise<Tokens> {
 
 /**
  * Reads the tokens map from disk.
- * 
+ *
  * Returns an empty object if there is no tokens file yet. The file will be created on the next
  * invocation of `writeTokensFile`.
  */
 async function readTokensFile(): Promise<Tokens> {
 	try {
-		await lstat(tokensFile);
+		await lstat(TOKENS_FILE);
 	} catch (e) {
 		if (e.code === 'ENOENT') {
 			return {};
 		}
 		throw e;
 	}
-	const fileContent = await readFile(tokensFile, { encoding: 'utf-8' });
+	const fileContent = await readFile(TOKENS_FILE, { encoding: 'utf-8' });
 	return JSON.parse(fileContent);
 }
 
@@ -96,5 +92,5 @@ async function readTokensFile(): Promise<Tokens> {
  * Write the current state of `cachedTokens` to disk.
  */
 async function writeTokensFile(): Promise<void> {
-	await writeFile(tokensFile, JSON.stringify(await cachedTokens, null, 2), { encoding: 'utf-8' });
+	await writeFile(TOKENS_FILE, JSON.stringify(await cachedTokens, null, 2), { encoding: 'utf-8' });
 }

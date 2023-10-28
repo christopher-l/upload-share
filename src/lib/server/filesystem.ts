@@ -1,3 +1,4 @@
+import { ROOT_DIR } from '$env/static/private';
 import { lstat, readdir } from 'fs/promises';
 import { getType } from 'mime';
 import { join } from 'path';
@@ -14,7 +15,7 @@ export interface RootFileEntry extends FileEntry {
 }
 
 export async function listRootDir(): Promise<RootFileEntry[]> {
-	const list = await _listFiles('.');
+	const list = await _listFiles(ROOT_DIR);
 	const rootList = await Promise.all(
 		list.map(async (entry) => ({ ...entry, token: await getToken(entry.name) }))
 	);
@@ -22,7 +23,7 @@ export async function listRootDir(): Promise<RootFileEntry[]> {
 }
 
 export async function listSubDir(path: string): Promise<FileEntry[]> {
-	return await _listFiles(path);
+	return await _listFiles(join(ROOT_DIR, path));
 }
 
 async function _listFiles(path: string): Promise<FileEntry[]> {
@@ -40,6 +41,6 @@ async function _listFiles(path: string): Promise<FileEntry[]> {
 }
 
 export async function isDirectory(path: string): Promise<boolean> {
-	const stats = await lstat(path);
+	const stats = await lstat(join(ROOT_DIR, path));
 	return stats.isDirectory();
 }
