@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { backTarget } from '$lib/stores';
+	import { backTarget, downloadTarget } from '$lib/stores';
 	import '@picocss/pico/css/pico.min.css';
 	import 'iconify-icon';
 	import '../app.scss';
@@ -18,7 +18,13 @@
 			{/if}
 		</div>
 		<h1>{data.filePath.length ? data.filePath.join('/') : 'HOME'}</h1>
-		<div />
+		<div>
+			{#if $downloadTarget}
+				<a class="icon standard" href={$downloadTarget.href} download={$downloadTarget.filename}>
+					<iconify-icon icon="mdi:download" width="36" height="36" />
+				</a>
+			{/if}
+		</div>
 	</nav>
 </header>
 

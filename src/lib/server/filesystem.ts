@@ -1,5 +1,5 @@
 import { ROOT_DIR } from '$env/static/private';
-import { lstat, readdir } from 'fs/promises';
+import { lstat, readdir, readFile } from 'fs/promises';
 import { getType } from 'mime';
 import { join } from 'path';
 import { getToken } from './tokens';
@@ -40,7 +40,27 @@ async function _listFiles(path: string): Promise<FileEntry[]> {
 	});
 }
 
-export async function isDirectory(path: string): Promise<boolean> {
-	const stats = await lstat(join(ROOT_DIR, path));
-	return stats.isDirectory();
+export async function getEntryType(path: string): Promise<'file' | 'directory' | null> {
+	try {
+		const stats = await lstat(join(ROOT_DIR, path));
+		if (stats.isDirectory()) {
+			return 'directory';
+		} else {
+			return 'file';
+		}
+	} catch (e) {
+		return null;
+	}
+}
+
+export async function getContent(
+	path: string
+): Promise<{ content: Buffer; mimetype: string } | null> {
+	try {
+		const content = await readFile(join(ROOT_DIR, path));
+		const mimetype = getType(path) ?? 'application/octet-stream';
+		return { content, mimetype };
+	} catch (e) {
+		return null;
+	}
 }
