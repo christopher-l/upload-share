@@ -7,10 +7,10 @@
 
 	const iconMap = {
 		'inode/directory': 'mdi:folder',
-		'text/markdown': 'mdi:language-markdown',
-		'application/json': 'mdi:code-json',
-		'application/javascript': 'mdi:language-javascript',
+		'application/pdf': 'fa-solid:file-pdf',
+		text: 'fa6-solid:file-lines',
 		image: 'mdi:image',
+		audio: 'mdi:music',
 		video: 'mdi:filmstrip',
 		other: 'mdi:file'
 	};

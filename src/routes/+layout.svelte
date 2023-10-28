@@ -37,6 +37,9 @@
 		background-color: var(--card-background-color);
 		box-shadow: var(--card-box-shadow);
 	}
+	nav {
+		align-items: center;
+	}
 	nav > div {
 		padding: 2px;
 		width: 60px;
@@ -45,6 +48,7 @@
 		margin: 0;
 	}
 	main {
+		flex-grow: 1;
 		padding: var(--block-spacing-vertical) 0;
 	}
 </style>
