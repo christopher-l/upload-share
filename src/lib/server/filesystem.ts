@@ -11,9 +11,7 @@ export interface FileEntry {
 
 export async function listRootDir(): Promise<FileEntry[]> {
 	const list = await _listFiles('.');
-	for (const file of list) {
-		file.token = await getToken(file.name);
-	}
+	await Promise.all(list.map(async file => file.token = await getToken(file.name)))
 	return list;
 }
 
