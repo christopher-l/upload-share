@@ -34,11 +34,12 @@
 
 <style lang="scss">
 	header {
-		background-color: var(--card-background-color);
-		box-shadow: var(--card-box-shadow);
+		background-color: var(--dropdown-background-color);
+		border: 1px solid var(--dropdown-border-color);
 	}
 	nav {
 		align-items: center;
+		min-height: 60px;
 	}
 	nav > div {
 		padding: 2px;
@@ -46,6 +47,9 @@
 	}
 	h1 {
 		margin: 0;
+		font-size: 1.5em;
+		padding: 0.25em;
+		line-height: 1.2;
 	}
 	main {
 		flex-grow: 1;
