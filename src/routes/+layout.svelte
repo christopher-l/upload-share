@@ -20,7 +20,7 @@
 		<h1>{data.filePath.length ? data.filePath.join('/') : 'HOME'}</h1>
 		<div>
 			{#if $downloadTarget}
-				<a class="icon standard" href={$downloadTarget.href} download={$downloadTarget.filename}>
+				<a class="icon standard" href={$downloadTarget} download>
 					<iconify-icon icon="mdi:download" width="36" height="36" />
 				</a>
 			{/if}

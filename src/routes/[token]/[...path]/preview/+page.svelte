@@ -5,10 +5,7 @@
 
 	export let data: PageData;
 
-	$: {
-		downloadTarget.set({
-			href: $page.url.pathname.split('/').slice(0, -1).join('/') + '/download',
-			filename: data.filePath[data.filePath.length - 1]
-		});
-	}
+	$: downloadTarget.set(data.downloadHref);
 </script>
+
+<img src={data.downloadHref} />

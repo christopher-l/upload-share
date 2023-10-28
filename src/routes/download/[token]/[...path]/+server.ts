@@ -3,7 +3,6 @@ import { getFilePath } from '$lib/server/utils';
 import { error } from '@sveltejs/kit';
 
 export async function GET({ params }) {
-	console.log(params);
 	const path = await getFilePath(params);
 	if (path) {
 		const result = await getContent(path);
