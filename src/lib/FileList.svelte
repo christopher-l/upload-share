@@ -4,6 +4,7 @@
 	import { isRootFileEntry } from './utils';
 
 	export let fileList: FileEntry[];
+	export let hasUploadToken: boolean;
 
 	const iconMap = {
 		'inode/directory': 'mdi:folder',
@@ -32,6 +33,10 @@
 		);
 	}
 </script>
+
+{#if hasUploadToken}
+	<input readonly value={$page.url} />
+{/if}
 
 <ul>
 	{#each fileList as file}

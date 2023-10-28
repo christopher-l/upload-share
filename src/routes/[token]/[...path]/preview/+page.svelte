@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { page } from '$app/stores';
 	import { downloadTarget } from '$lib/stores';
 	import { onMount } from 'svelte';
 	import type { PageData } from './$types';
@@ -18,6 +19,10 @@
 	}
 </script>
 
+{#if data.hasUploadToken}
+	<input readonly value={$page.url.toString().replace(/\/preview$/, '')} />
+{/if}
+
 {#if data.mimetype?.startsWith('image/')}
 	<img src={data.downloadHref} alt={filename} />
 {:else if data.mimetype?.startsWith('audio/')}
@@ -29,11 +34,7 @@
 		<pre>{text}</pre>
 	{/if}
 {:else if data.mimetype === 'application/pdf'}
-	<object
-		title={filename}
-		data={data.downloadHref}
-		type="application/pdf"
-	/>
+	<object title={filename} data={data.downloadHref} type="application/pdf" />
 {/if}
 
 <style lang="scss">
