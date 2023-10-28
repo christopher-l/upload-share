@@ -1,6 +1,7 @@
 <script lang="ts">
-	import type { FileEntry } from './server/filesystem';
 	import { page } from '$app/stores';
+	import type { FileEntry } from './server/filesystem';
+	import { isRootFileEntry } from './utils';
 
 	export let fileList: FileEntry[];
 
@@ -14,12 +15,13 @@
 		other: 'mdi:file'
 	};
 
-	let getHref: (file: FileEntry) => string;
-	$: if ($page.url.pathname === '/') {
-		getHref = (file) => file.token as string;
-	} else {
-		getHref = (file) => $page.url.pathname + '/' + file.name;
-	}
+	$: getHref = (entry: FileEntry) => {
+		if (isRootFileEntry(entry)) {
+			return entry.token;
+		} else {
+			return $page.url.pathname + '/' + entry.name;
+		}
+	};
 
 	function getIcon(type: string | null): string {
 		const baseType = type?.split('/', 1)?.[0];

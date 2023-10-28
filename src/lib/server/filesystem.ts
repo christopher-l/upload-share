@@ -6,13 +6,19 @@ import { getToken } from './tokens';
 export interface FileEntry {
 	name: string;
 	type: string | null;
-	token?: string;
+	modifiedTime: Date;
 }
 
-export async function listRootDir(): Promise<FileEntry[]> {
+export interface RootFileEntry extends FileEntry {
+	token: string;
+}
+
+export async function listRootDir(): Promise<RootFileEntry[]> {
 	const list = await _listFiles('.');
-	await Promise.all(list.map(async file => file.token = await getToken(file.name)))
-	return list;
+	const rootList = await Promise.all(
+		list.map(async (entry) => ({ ...entry, token: await getToken(entry.name) }))
+	);
+	return rootList;
 }
 
 export async function listSubDir(path: string): Promise<FileEntry[]> {
@@ -27,7 +33,8 @@ async function _listFiles(path: string): Promise<FileEntry[]> {
 		const isDirectory = stats[index].isDirectory();
 		return {
 			name,
-			type: isDirectory ? 'inode/directory' : getType(name)
+			type: isDirectory ? 'inode/directory' : getType(name),
+			modifiedTime: stats[index].mtime
 		};
 	});
 }
