@@ -18,7 +18,7 @@ export async function listRootDir(): Promise<RootFileEntry[]> {
 	const rootList = await Promise.all(
 		list.map(async (entry) => ({ ...entry, token: await getToken(entry.name) }))
 	);
-	return rootList;
+	return rootList.sort((a, b) => b.modifiedTime.getTime() - a.modifiedTime.getTime());
 }
 
 export async function listSubDir(path: string): Promise<FileEntry[]> {
