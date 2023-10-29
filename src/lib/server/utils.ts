@@ -14,3 +14,25 @@ export async function getFilePath(params: { token: string; path: string }): Prom
 	}
 	return path;
 }
+
+/**
+ * Returns the download HREF for the given file.
+ * 
+ * @param token The root entry's download token.
+ * @param filePath The file's complete path as provided by the root `+layout.server.ts`.
+ */
+export function getDownloadHref(
+	token: string,
+	filePath: string[]
+): string {
+	const [rootPath, ...subPath] = filePath;
+	if (subPath.length > 0) {
+		return `/download/${token}/${subPath.join('')}`;
+	} else {
+		// We append the filename to the URL, so the browser has the correct name when downloading
+		// and so it will have the correct extension when used in `src` tags. The `download`
+		// endpoint needs to strip this when received. We use the additional '/' character to
+		// identify this scenario.
+		return `/download/${token}//${rootPath}`;
+	}
+}

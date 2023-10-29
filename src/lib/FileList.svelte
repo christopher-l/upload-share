@@ -1,9 +1,10 @@
 <script lang="ts">
 	import { page } from '$app/stores';
+	import type { FileListEntry } from '../routes/[token]/[...path]/+page.server';
 	import type { FileEntry } from './server/filesystem';
 	import { isRootFileEntry } from './utils';
 
-	export let fileList: FileEntry[];
+	export let fileList: FileListEntry[];
 	export let hasUploadToken: boolean;
 
 	const iconMap = {
@@ -45,9 +46,16 @@
 				<iconify-icon icon={getIcon(file.type)} width="36" height="36" />
 				<span>{file.name}</span>
 			</a>
-			<button class="standard icon">
-				<iconify-icon icon="ic:baseline-more-vert" width="36" height="36" />
-			</button>
+			{#if file.downloadHref}
+				<a href={file.downloadHref} download class="standard icon">
+					<iconify-icon icon="mdi:download" width="36" height="36" />
+				</a>
+			{:else}
+				<!-- Render hidden button to take up space. -->
+				<button style="visibility: hidden" class="standard icon">
+					<iconify-icon icon="mdi:download" width="36" height="36" />
+				</button>
+			{/if}
 		</li>
 	{/each}
 </ul>
@@ -64,7 +72,7 @@
 		&:focus-within {
 			background-color: var(--secondary-focus);
 		}
-		a {
+		a:first-child {
 			flex-grow: 1;
 			display: flex;
 			align-items: center;
