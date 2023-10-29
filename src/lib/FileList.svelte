@@ -6,6 +6,7 @@
 
 	export let fileList: FileListEntry[];
 	export let hasUploadToken: boolean;
+	export let filePath: string[];
 
 	const iconMap = {
 		'inode/directory': 'mdi:folder',
@@ -33,13 +34,37 @@
 			iconMap.other
 		);
 	}
+
+	$: getBreadcrumbsHref = (index: number) => {
+		if (index === filePath.length - 2) {
+			return '.';
+		} else {
+			return Array(filePath.length - index - 2)
+				.fill('..')
+				.join('/');
+		}
+	};
 </script>
 
 {#if hasUploadToken}
 	<input readonly value={$page.url} />
 {/if}
 
-<ul>
+{#if filePath.length > 0}
+	<nav aria-label="breadcrumb">
+		<ul>
+			{#each filePath as component, i}
+				{#if i < filePath.length - 1}
+					<li><a href={getBreadcrumbsHref(i)}>{component}</a></li>
+				{:else}
+					<li>{component}</li>
+				{/if}
+			{/each}
+		</ul>
+	</nav>
+{/if}
+
+<ul class="file-list">
 	{#each fileList as file}
 		<li>
 			<a href={getHref(file)}>
@@ -61,27 +86,27 @@
 </ul>
 
 <style lang="scss">
-	ul {
+	ul.file-list {
 		padding: calc(var(--spacing) / 2);
-	}
-	li {
-		list-style: none;
-		display: flex;
-		border-radius: var(--border-radius);
-		&:hover,
-		&:focus-within {
-			background-color: var(--secondary-focus);
-		}
-		a:first-child {
-			flex-grow: 1;
+		li {
+			list-style: none;
 			display: flex;
-			align-items: center;
-			gap: var(--spacing);
-			padding: 0 var(--spacing);
-			--color: inherit;
+			border-radius: var(--border-radius);
 			&:hover,
-			&:focus {
-				text-decoration: unset;
+			&:focus-within {
+				background-color: var(--secondary-focus);
+			}
+			a:first-child {
+				flex-grow: 1;
+				display: flex;
+				align-items: center;
+				gap: var(--spacing);
+				padding: 0 var(--spacing);
+				--color: inherit;
+				&:hover,
+				&:focus {
+					text-decoration: unset;
+				}
 			}
 		}
 	}

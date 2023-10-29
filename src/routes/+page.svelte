@@ -9,4 +9,4 @@
 	downloadTarget.set(null);
 </script>
 
-<FileList fileList={data.fileList} />
+<FileList {...data} />
