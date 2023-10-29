@@ -36,3 +36,19 @@ npm run build
 You can preview the production build with `npm run preview`.
 
 > To deploy your app, you may need to install an [adapter](https://kit.svelte.dev/docs/adapters) for your target environment.
+
+## Building Docker Images
+
+```bash
+# Current platform
+docker build . -t upload-share
+# Arm64
+docker build . -t upload-share --platform=linux/arm64
+```
+
+## Save and Load Docker Image from File
+
+```bash
+docker save -o upload-share.tar upload-share
+docker load -i upload-share.tar
+```

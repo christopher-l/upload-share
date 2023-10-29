@@ -29,6 +29,7 @@
 {:else if data.mimetype?.startsWith('audio/')}
 	<audio src={data.downloadHref} controls />
 {:else if data.mimetype?.startsWith('video/')}
+	<!-- svelte-ignore a11y-media-has-caption -->
 	<video src={data.downloadHref} controls />
 {:else if data.mimetype?.startsWith('text/')}
 	{#if text}

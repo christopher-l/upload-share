@@ -1,7 +1,9 @@
+import { dev } from '$app/environment';
 import { env } from '$env/dynamic/private';
-import { DISABLE_AUTHENTICATION } from '$env/static/private';
 import type { Cookies } from '@sveltejs/kit';
 import { parse } from 'url';
+
+const DISABLE_AUTHENTICATION = dev && env.DISABLE_AUTHENTICATION;
 
 /**
  * Checks if the user provided a valid upload token via cookies or URL parameter.

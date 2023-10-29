@@ -1,0 +1,11 @@
+services:
+  app:
+    # build: .
+    image: upload-share
+    user: 1000:1000
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./run:/app/run
+    environment:
+      - UPLOAD_TOKEN=${UPLOAD_TOKEN}

@@ -1,6 +1,6 @@
-import { getType } from 'mime';
-import type { PageServerLoad } from './$types';
+import mime from 'mime';
 import { getDownloadHref } from '../../../../lib/server/utils';
+import type { PageServerLoad } from './$types';
 
 export const load: PageServerLoad<{
 	downloadHref: string;
@@ -8,6 +8,6 @@ export const load: PageServerLoad<{
 }> = async ({ params, parent }) => {
 	const filePath = (await parent()).filePath;
 	const downloadHref = getDownloadHref(params.token, filePath);
-	const mimetype = getType(filePath[filePath.length - 1]);
+	const mimetype = mime.getType(filePath[filePath.length - 1]);
 	return { downloadHref, mimetype };
 };
