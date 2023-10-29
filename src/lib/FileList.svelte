@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { page } from '$app/stores';
 	import type { FileListEntry } from '../routes/[token]/[...path]/+page.server';
+	import ShareUrl from './ShareUrl.svelte';
 	import type { FileEntry } from './server/filesystem';
 	import { isRootFileEntry } from './utils';
 
@@ -47,7 +48,7 @@
 </script>
 
 {#if hasUploadToken}
-	<input readonly value={$page.url} />
+	<ShareUrl url={$page.url.toString()} />
 {/if}
 
 {#if filePath.length > 0}
@@ -87,7 +88,7 @@
 
 <style lang="scss">
 	ul.file-list {
-		padding: calc(var(--spacing) / 2);
+		padding: 0;
 		li {
 			list-style: none;
 			display: flex;

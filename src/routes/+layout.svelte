@@ -40,7 +40,7 @@
 <style lang="scss">
 	header {
 		background-color: var(--dropdown-background-color);
-		border: 1px solid var(--dropdown-border-color);
+		border-bottom: 1px solid var(--dropdown-border-color);
 	}
 	nav {
 		align-items: center;
@@ -58,6 +58,6 @@
 	}
 	main {
 		flex-grow: 1;
-		padding: var(--block-spacing-vertical) 0;
+		padding: var(--block-spacing-vertical) var(--block-spacing-horizontal);
 	}
 </style>

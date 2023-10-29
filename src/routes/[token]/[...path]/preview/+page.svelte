@@ -3,6 +3,7 @@
 	import { downloadTarget } from '$lib/stores';
 	import { onMount } from 'svelte';
 	import type { PageData } from './$types';
+	import ShareUrl from '../../../../lib/ShareUrl.svelte';
 
 	export let data: PageData;
 
@@ -20,7 +21,7 @@
 </script>
 
 {#if data.hasUploadToken}
-	<input readonly value={$page.url.toString().replace(/\/preview$/, '')} />
+	<ShareUrl url={$page.url.toString().replace(/\/preview$/, '')} />
 {/if}
 
 {#if data.mimetype?.startsWith('image/')}
