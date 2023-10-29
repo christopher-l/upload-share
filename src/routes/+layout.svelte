@@ -6,7 +6,12 @@
 	import type { PageData } from './$types';
 
 	export let data: PageData;
+	$: title = data.filePath.length ? data.filePath[data.filePath.length - 1] : 'HOME';
 </script>
+
+<svelte:head>
+	<title>{title}</title>
+</svelte:head>
 
 <header>
 	<nav>
@@ -17,7 +22,7 @@
 				</a>
 			{/if}
 		</div>
-		<h1>{data.filePath.length ? data.filePath.join('/') : 'HOME'}</h1>
+		<h1>{title}</h1>
 		<div>
 			{#if $downloadTarget}
 				<a class="icon standard" href={$downloadTarget} download>
