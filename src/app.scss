@@ -5,15 +5,23 @@ body {
 	min-height: 100%;
 }
 
-div, span, body, main, nav, button {
+div,
+span,
+body,
+main,
+nav,
+footer {
 	display: flex;
 }
 
-div, body, main {
+div,
+body,
+main {
 	flex-direction: column;
 }
 
 button,
+[role='button'],
 a {
 	&.standard {
 		--color: inherit;
@@ -22,6 +30,13 @@ a {
 		&:focus,
 		&:hover {
 			background-color: var(--primary-focus);
+		}
+	}
+	&.standard.danger {
+		&:focus,
+		&:hover {
+			--color: var(--contrast-inverse);
+			background-color: var(--del-color);
 		}
 	}
 	&.icon {

@@ -47,6 +47,18 @@ export async function getToken(path: string): Promise<string> {
 }
 
 /**
+ * Deletes the token that corresponds to the given root-level path if it exists.
+ */
+export async function deleteTokenForPath(path: string): Promise<void> {
+	const tokens = await getTokens();
+	const token = Object.entries(tokens).find(([, p]) => path === p)?.[0];
+	if (token) {
+		delete tokens[token];
+		void writeTokensFile();
+	}
+}
+
+/**
  * Generates a new token suitable as URL path component.
  */
 function generateToken(): string {

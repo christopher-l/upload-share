@@ -1,6 +1,8 @@
 <script lang="ts">
 	import { page } from '$app/stores';
+	import { slide } from 'svelte/transition';
 	import type { FileListEntry } from '../routes/[token]/[...path]/+page.server';
+	import FileMenu from './FileMenu.svelte';
 	import NewButton from './NewButton.svelte';
 	import ShareUrl from './ShareUrl.svelte';
 	import type { FileEntry } from './server/filesystem';
@@ -70,13 +72,15 @@
 	<NewButton />
 {/if}
 <ul class="file-list">
-	{#each fileList as file}
-		<li>
+	{#each fileList as file (file.name)}
+		<li transition:slide>
 			<a href={getHref(file)}>
 				<iconify-icon icon={getIcon(file.type)} width="36" height="36" />
 				<span>{file.name}</span>
 			</a>
-			{#if file.downloadHref}
+			{#if hasUploadToken}
+				<FileMenu {file} />
+			{:else if file.downloadHref}
 				<a href={file.downloadHref} download class="standard icon">
 					<iconify-icon icon="mdi:download" width="36" height="36" />
 				</a>

@@ -1,8 +1,8 @@
 import { ROOT_DIR } from '$env/static/private';
-import { lstat, readdir, readFile, mkdir } from 'fs/promises';
+import { lstat, mkdir, readFile, readdir, rm } from 'fs/promises';
 import mime from 'mime';
 import { join } from 'path';
-import { getToken } from './tokens';
+import { deleteTokenForPath, getToken } from './tokens';
 
 export interface FileEntry {
 	name: string;
@@ -80,8 +80,8 @@ async function createRootDirIfNeeded(): Promise<void> {
 			throw e;
 		}
 	}
+	console.log('Creating root directory', ROOT_DIR);
 	await mkdir(ROOT_DIR);
-	console.log('Created root directory', ROOT_DIR);
 }
 
 /**
@@ -90,5 +90,14 @@ async function createRootDirIfNeeded(): Promise<void> {
  * @param path The complete path to the folder to create from ROOT_DIR.
  */
 export async function createFolder(path: string): Promise<void> {
+	console.log('Creating directory', path);
 	await mkdir(join(ROOT_DIR, path));
+}
+
+export async function remove(path: string): Promise<void> {
+	console.log('Deleting', path);
+	await rm(join(ROOT_DIR, path), { recursive: true });
+	if (!path.includes('/')) {
+		await deleteTokenForPath(path);
+	}
 }

@@ -1,5 +1,5 @@
 import { hasValidUploadToken } from '$lib/server/authentication';
-import { createFolder, listRootDir, type FileEntry } from '$lib/server/filesystem';
+import { createFolder, listRootDir, remove, type FileEntry } from '$lib/server/filesystem';
 import { error } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
 
@@ -26,6 +26,25 @@ export const actions = {
 		} catch (e) {
 			if (e.code === 'EEXIST') {
 				throw error(409);
+			} else {
+				throw error(500);
+			}
+		}
+	},
+	delete: async ({ cookies, request }) => {
+		if (!hasValidUploadToken(request, cookies)) {
+			throw error(401);
+		}
+		const data = await request.formData();
+		const name = data.get('name')?.toString().trim();
+		if (!name || name.includes('/')) {
+			throw 400;
+		}
+		try {
+			await remove(name);
+		} catch (e) {
+			if (e.code === 'ENOENT') {
+				throw error(404);
 			} else {
 				throw error(500);
 			}

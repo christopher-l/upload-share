@@ -1,4 +1,6 @@
 <script lang="ts">
+	import { enhance } from '$app/forms';
+
 	/** The user chose to create a new folder and is currently prompted to choose a name. */
 	let creatingFolder = false;
 	let newFolderName = '';
@@ -18,7 +20,7 @@
 </script>
 
 {#if creatingFolder}
-	<form method="POST" action="?/newFolder">
+	<form method="POST" action="?/newFolder" use:enhance on:submit={() => (creatingFolder = false)}>
 		<iconify-icon icon="mdi:folder" width="36" height="36" />
 		<input
 			name="name"

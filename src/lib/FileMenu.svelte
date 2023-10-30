@@ -1,0 +1,102 @@
+<script lang="ts">
+	import type { FileListEntry } from '../routes/[token]/[...path]/proxy+page.server';
+
+	export let file: FileListEntry;
+
+	let details: HTMLDetailsElement;
+	let dialog: HTMLDialogElement;
+
+	function confirmDelete(): void {
+		dialog.showModal();
+		details.removeAttribute('open');
+	}
+</script>
+
+<details role="list" bind:this={details}>
+	<!-- svelte-ignore a11y-no-redundant-roles -->
+	<summary aria-haspopup="listbox" role="button" class="icon standard">
+		<iconify-icon icon="mdi:dots-vertical" width="36" height="36" />
+	</summary>
+	<ul role="listbox">
+		<li>
+			<!-- svelte-ignore a11y-missing-attribute -->
+			<!-- svelte-ignore a11y-click-events-have-key-events -->
+			<!-- svelte-ignore a11y-no-static-element-interactions -->
+			<a class="danger" on:click={confirmDelete}>
+				<iconify-icon icon="mdi:delete" width="36" height="36" />
+				Delete
+			</a>
+		</li>
+	</ul>
+</details>
+
+<!-- svelte-ignore a11y-click-events-have-key-events -->
+<!-- svelte-ignore a11y-no-noninteractive-element-interactions -->
+<dialog bind:this={dialog} on:click|self={() => dialog.close()}>
+	<article>
+		<header>
+			Delete {file.name}
+		</header>
+		<p>
+			{#if file.type === 'inode/directory'}
+				Delete {file.name} and all its contents?
+			{:else}
+				Delete {file.name}?
+			{/if}
+		</p>
+		<footer>
+			<!-- svelte-ignore a11y-invalid-attribute -->
+			<button class="secondary" on:click={() => dialog.close()}>Cancel</button>
+			<form method="POST" action="?/delete">
+				<input hidden name="name" value={file.name} />
+				<button class="danger">Delete</button>
+			</form>
+		</footer>
+	</article>
+</dialog>
+
+<style lang="scss">
+	details {
+		margin: 0;
+		summary {
+			&::after {
+				content: unset;
+			}
+		}
+		ul {
+			left: unset;
+			width: unset;
+		}
+		a {
+			cursor: pointer;
+			display: flex;
+			align-items: center;
+			gap: var(--spacing);
+			&.danger {
+				color: var(--del-color);
+			}
+		}
+	}
+	dialog {
+		article {
+			min-width: min(90vw, 600px);
+		}
+		footer {
+			justify-content: flex-end;
+			gap: var(--spacing);
+		}
+		form {
+			margin: 0;
+		}
+		button {
+			display: inline-flex;
+			width: unset;
+			margin: unset;
+		}
+		button.danger {
+			background-color: var(--del-color);
+			color: var(--primary-inverse);
+			border-color: var(--form-element-invalid-active-border-color);
+		}
+	}
+</style>
