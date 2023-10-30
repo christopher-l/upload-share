@@ -5,7 +5,7 @@ body {
 	min-height: 100%;
 }
 
-div, span, body, main, nav {
+div, span, body, main, nav, button {
 	display: flex;
 }
 
@@ -17,6 +17,7 @@ button,
 a {
 	&.standard {
 		--color: inherit;
+		background: none;
 		border-color: transparent;
 		&:focus,
 		&:hover {
@@ -25,7 +26,6 @@ a {
 	}
 	&.icon {
 		display: grid;
-		background: none;
 		width: unset;
 		margin: unset;
 		padding: calc(var(--spacing) / 2);

@@ -9,4 +9,4 @@
 	downloadTarget.set(null);
 </script>
 
-<FileList {...data} />
+<FileList {...data} hasUploadToken={true} />

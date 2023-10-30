@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { page } from '$app/stores';
 	import type { FileListEntry } from '../routes/[token]/[...path]/+page.server';
+	import NewButton from './NewButton.svelte';
 	import ShareUrl from './ShareUrl.svelte';
 	import type { FileEntry } from './server/filesystem';
 	import { isRootFileEntry } from './utils';
@@ -47,7 +48,7 @@
 	};
 </script>
 
-{#if hasUploadToken}
+{#if hasUploadToken && filePath.length > 0}
 	<ShareUrl url={$page.url.toString()} />
 {/if}
 
@@ -65,6 +66,9 @@
 	</nav>
 {/if}
 
+{#if hasUploadToken}
+	<NewButton />
+{/if}
 <ul class="file-list">
 	{#each fileList as file}
 		<li>
