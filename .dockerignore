@@ -1,2 +1,14 @@
-.env
+.DS_Store
 node_modules
+/build
+/.svelte-kit
+/package
+.*
+!.env.docker
+vite.config.js.timestamp-*
+vite.config.ts.timestamp-*
+/run
+Dockerfile
+docker-compose.yml
+/media
+README.md

@@ -1,18 +1,6 @@
-# create-svelte
+# Upload Share
 
-Everything you need to build a Svelte project, powered by [`create-svelte`](https://github.com/sveltejs/kit/tree/master/packages/create-svelte).
-
-## Creating a project
-
-If you're seeing this, you've probably already done this step. Congrats!
-
-```bash
-# create a new project in the current directory
-npm create svelte@latest
-
-# create a new project in my-app
-npm create svelte@latest my-app
-```
+A simplistic file-sharing service for self hosting.
 
 ## Developing
 
@@ -25,25 +13,25 @@ npm run dev
 npm run dev -- --open
 ```
 
-## Building
+## Configuration
 
-To create a production version of your app:
-
+The application is configured via environment variables provided in the file `.env`.
 ```bash
-npm run build
+# Copy the default configuration file
+cp .env.example .env
 ```
 
-You can preview the production build with `npm run preview`.
-
-> To deploy your app, you may need to install an [adapter](https://kit.svelte.dev/docs/adapters) for your target environment.
+The file can be used for developing and production builds. However, build-time variables (see
+`.env.example`) will be burnt into the docker image.
 
 ## Building Docker Images
 
 ```bash
 # Current platform
-docker build . -t upload-share
+docker build . -t upload-share --pull
 # Arm64
-docker build . -t upload-share --platform=linux/arm64
+docker run --rm --privileged multiarch/qemu-user-static --reset -p yes
+docker build . -t upload-share --platform=linux/arm64 --pull
 ```
 
 ## Save and Load Docker Image from File
@@ -52,3 +40,7 @@ docker build . -t upload-share --platform=linux/arm64
 docker save -o upload-share.tar upload-share
 docker load -i upload-share.tar
 ```
+
+## Deploying With Docker Compose
+
+The application can be deployed using the provided `docker-compose.yml`. Configuration has to be provided with an `.env` file in the same directory.

@@ -9,3 +9,4 @@ services:
       - ./run:/app/run
     environment:
       - UPLOAD_TOKEN=${UPLOAD_TOKEN}
+      - ORIGIN=${ORIGIN}

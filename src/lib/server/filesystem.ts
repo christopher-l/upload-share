@@ -1,3 +1,4 @@
+import { building } from '$app/environment';
 import { ROOT_DIR } from '$env/static/private';
 import { lstat, mkdir, readFile, readdir, rm } from 'fs/promises';
 import mime from 'mime';
@@ -14,7 +15,10 @@ export interface RootFileEntry extends FileEntry {
 	token: string;
 }
 
-const initialized = createRootDirIfNeeded();
+let initialized: Promise<void>;
+if (!building) {
+	initialized = createRootDirIfNeeded();
+}
 
 export async function listRootDir(): Promise<RootFileEntry[]> {
 	await initialized;
