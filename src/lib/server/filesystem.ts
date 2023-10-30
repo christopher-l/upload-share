@@ -83,3 +83,12 @@ async function createRootDirIfNeeded(): Promise<void> {
 	await mkdir(ROOT_DIR);
 	console.log('Created root directory', ROOT_DIR);
 }
+
+/**
+ * Creates a new folder.
+ *
+ * @param path The complete path to the folder to create from ROOT_DIR.
+ */
+export async function createFolder(path: string): Promise<void> {
+	await mkdir(join(ROOT_DIR, path));
+}

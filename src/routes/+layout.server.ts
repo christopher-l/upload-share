@@ -18,3 +18,4 @@ export const load: LayoutServerLoad<{ filePath: string[] }> = async ({ params })
 
 	return { filePath };
 };
+

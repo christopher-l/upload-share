@@ -13,13 +13,22 @@
 		input.focus;
 		input.select();
 	}
+
+	$: nameIsValid = !newFolderName.includes('/');
 </script>
 
 {#if creatingFolder}
-    <form>
+	<form method="POST" action="?/newFolder">
 		<iconify-icon icon="mdi:folder" width="36" height="36" />
-		<input name="new-folder" bind:value={newFolderName} use:initNewFolder />
-		<button class="contrast">Create</button>
+		<input
+			name="name"
+			bind:value={newFolderName}
+			use:initNewFolder
+			aria-invalid={nameIsValid ? undefined : true}
+		/>
+		{#if nameIsValid}
+			<button class="secondary" disabled={!newFolderName.trim()}>Create</button>
+		{/if}
 	</form>
 {:else}
 	<details role="list">
@@ -60,7 +69,7 @@
 			align-items: center;
 		}
 		input {
-			padding-left: calc(var(--spacing) * 2 + 36px);
+			padding-left: calc(var(--spacing) * 2 + 36px) !important;
 			padding-right: calc(var(--form-element-spacing-horizontal) * 3 + 3.5rem);
 		}
 		button {
