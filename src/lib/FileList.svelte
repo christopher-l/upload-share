@@ -1,6 +1,5 @@
 <script lang="ts">
 	import { page } from '$app/stores';
-	import { slide } from 'svelte/transition';
 	import type { FileListEntry } from '../routes/[token]/[...path]/+page.server';
 	import FileMenu from './FileMenu.svelte';
 	import NewButton from './NewButton.svelte';
@@ -73,7 +72,7 @@
 {/if}
 <ul class="file-list">
 	{#each fileList as file (file.name)}
-		<li transition:slide>
+		<li>
 			<a href={getHref(file)}>
 				<iconify-icon icon={getIcon(file.type)} width="36" height="36" />
 				<span>{file.name}</span>

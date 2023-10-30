@@ -4,6 +4,8 @@
 	/** The user chose to create a new folder and is currently prompted to choose a name. */
 	let creatingFolder = false;
 	let newFolderName = '';
+	/** The user has created a folder and the request is currently in flight to the server. */
+	let awaitingResponse = false;
 
 	/** Prompts the user to choose a name for a new folder to create. */
 	function newFolder(): void {
@@ -20,13 +22,25 @@
 </script>
 
 {#if creatingFolder}
-	<form method="POST" action="?/newFolder" use:enhance on:submit={() => (creatingFolder = false)}>
+	<form
+		method="POST"
+		action="?/newFolder"
+		use:enhance={() => {
+			awaitingResponse = true;
+			return async ({ update }) => {
+				await update();
+				awaitingResponse = false;
+				creatingFolder = false;
+			};
+		}}
+	>
 		<iconify-icon icon="mdi:folder" width="36" height="36" />
 		<input
 			name="name"
 			bind:value={newFolderName}
 			use:initNewFolder
 			aria-invalid={nameIsValid ? undefined : true}
+			disabled={awaitingResponse}
 		/>
 		{#if nameIsValid}
 			<button class="secondary" disabled={!newFolderName.trim()}>Create</button>

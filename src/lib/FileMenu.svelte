@@ -1,10 +1,12 @@
 <script lang="ts">
+	import { enhance } from '$app/forms';
 	import type { FileListEntry } from '../routes/[token]/[...path]/proxy+page.server';
 
 	export let file: FileListEntry;
 
 	let details: HTMLDetailsElement;
 	let dialog: HTMLDialogElement;
+	let deleting = false;
 
 	function confirmDelete(): void {
 		dialog.showModal();
@@ -46,10 +48,16 @@
 		</p>
 		<footer>
 			<!-- svelte-ignore a11y-invalid-attribute -->
-			<button class="secondary" on:click={() => dialog.close()}>Cancel</button>
-			<form method="POST" action="?/delete">
+			<button class="secondary" disabled={deleting} on:click={() => dialog.close()}>Cancel</button>
+			<form
+				method="POST"
+				action="?/delete"
+				use:enhance={() => {
+					deleting = true;
+				}}
+			>
 				<input hidden name="name" value={file.name} />
-				<button class="danger">Delete</button>
+				<button class="danger" disabled={deleting}>Delete</button>
 			</form>
 		</footer>
 	</article>
