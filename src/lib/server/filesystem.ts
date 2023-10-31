@@ -1,5 +1,6 @@
 import { building } from '$app/environment';
 import { ROOT_DIR } from '$env/static/private';
+import { fileTypeFromBuffer } from 'file-type';
 import { lstat, mkdir, readFile, readdir, rm, writeFile } from 'fs/promises';
 import mime from 'mime';
 import { join } from 'path';
@@ -82,7 +83,7 @@ export async function getContent(
 ): Promise<{ content: Buffer; mimetype: string } | null> {
 	try {
 		const content = await readFile(join(ROOT_DIR, ...path));
-		const mimetype = mime.getType(path[path.length - 1]) ?? 'application/octet-stream';
+		const mimetype = (await fileTypeFromBuffer(content))?.mime ?? 'application/octet-stream';
 		return { content, mimetype };
 	} catch (e) {
 		return null;
