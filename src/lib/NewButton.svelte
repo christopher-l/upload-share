@@ -7,6 +7,8 @@
 	/** The user has created a folder and the request is currently in flight to the server. */
 	let awaitingResponse = false;
 
+	let fileInput: HTMLInputElement;
+
 	/** Prompts the user to choose a name for a new folder to create. */
 	function newFolder(): void {
 		creatingFolder = true;
@@ -16,6 +18,13 @@
 	function initNewFolder(input: HTMLInputElement): void {
 		input.focus;
 		input.select();
+	}
+
+	function uploadFiles(event: Event): void {
+		console.log(event);
+		const files = fileInput.files
+		console.log(files);
+		fileInput.form?.submit();
 	}
 
 	$: nameIsValid = !newFolderName.includes('/');
@@ -53,17 +62,30 @@
 			<li>
 				<!-- svelte-ignore a11y-missing-attribute -->
 				<!-- svelte-ignore a11y-no-static-element-interactions -->
-				<a on:click={newFolder} on:keydown={newFolder}>
+				<!-- svelte-ignore a11y-click-events-have-key-events -->
+				<a on:click={newFolder}>
 					<iconify-icon icon="mdi:folder" width="36" height="36" />
 					New Folder
 				</a>
 			</li>
 			<li>
 				<!-- svelte-ignore a11y-missing-attribute -->
-				<a>
+				<!-- svelte-ignore a11y-click-events-have-key-events -->
+				<!-- svelte-ignore a11y-no-static-element-interactions -->
+				<a on:click={() => fileInput.click()}>
 					<iconify-icon icon="ic:round-upload" width="36" height="36" />
 					Upload File
 				</a>
+				<form method="post" action="?/upload" style="display: none;">
+					<input
+						bind:this={fileInput}
+						type="file"
+						name="filename"
+						multiple
+						on:change={uploadFiles}
+					/>
+					<input type="submit" />
+				</form>
 			</li>
 		</ul>
 	</details>
