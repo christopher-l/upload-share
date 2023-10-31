@@ -1,13 +1,29 @@
 <script lang="ts">
 	import { enhance } from '$app/forms';
+	import { invalidateAll } from '$app/navigation';
+	import { navigating } from '$app/stores';
+	import { cubicOut } from 'svelte/easing';
+	import { tweened } from 'svelte/motion';
+	import FileList from './FileList.svelte';
+	import type { FileListEntry } from './types';
 
+	let menu: HTMLDetailsElement;
 	/** The user chose to create a new folder and is currently prompted to choose a name. */
 	let creatingFolder = false;
 	let newFolderName = '';
-	/** The user has created a folder and the request is currently in flight to the server. */
+	/** The user requested an action and the request is currently in flight to the server. */
 	let awaitingResponse = false;
 
 	let fileInput: HTMLInputElement;
+	let uploadingFiles: FileListEntry[] | null;
+
+	$: nameIsValid = !newFolderName.includes('/');
+
+	$: if ($navigating) {
+		creatingFolder = false;
+		awaitingResponse = false;
+		uploadingFiles = null;
+	}
 
 	/** Prompts the user to choose a name for a new folder to create. */
 	function newFolder(): void {
@@ -20,14 +36,68 @@
 		input.select();
 	}
 
-	function uploadFiles(event: Event): void {
-		console.log(event);
-		const files = fileInput.files
-		console.log(files);
-		fileInput.form?.submit();
+	function uploadFiles(): void {
+		menu.removeAttribute('open');
+		const files = fileInput.files;
+		if (!files) {
+			return;
+		}
+		Promise.all([...files].map(uploadFile))
+			.then(() => {
+				uploadingFiles = null;
+				invalidateAll();
+			})
+			.catch((e) => {
+				console.log('catch', uploadingFiles);
+
+				console.error(e);
+			});
 	}
 
-	$: nameIsValid = !newFolderName.includes('/');
+	function uploadFile(file: File): Promise<void> {
+		console.log('uploadFile', file);
+		const ajax = new XMLHttpRequest();
+		const fileEntry: FileListEntry = {
+			name: file.name,
+			type: file.type,
+			progress: 0,
+			abort: () => ajax.abort()
+		};
+		const progress = tweened(0, { easing: cubicOut });
+		const unsubscribe = progress.subscribe((progress) => {
+			fileEntry.progress = progress;
+			uploadingFiles = uploadingFiles;
+		});
+		function onProgress(event: ProgressEvent): void {
+			progress.set(event.loaded / event.total);
+		}
+		const formdata = new FormData();
+		formdata.append('file', file);
+		uploadingFiles = [...(uploadingFiles ?? []), fileEntry];
+		ajax.upload.addEventListener('progress', onProgress);
+		return new Promise<void>((resolve, reject) => {
+			ajax.addEventListener('load', (e) => {
+				if (ajax.status === 200) {
+					resolve();
+				} else {
+					console.log('!== 200', ajax);
+					fileEntry.progress = 1;
+					fileEntry.abort = undefined;
+					fileEntry.error = true;
+					uploadingFiles = uploadingFiles;
+					reject(ajax.statusText);
+				}
+			});
+			ajax.addEventListener('error', (e) => {
+				fileEntry.error = true;
+				uploadingFiles = uploadingFiles;
+				reject(e);
+			});
+			ajax.addEventListener('abort', () => resolve());
+			ajax.open('POST', '?/upload');
+			ajax.send(formdata);
+		}).finally(unsubscribe);
+	}
 </script>
 
 {#if creatingFolder}
@@ -52,12 +122,16 @@
 			disabled={awaitingResponse}
 		/>
 		{#if nameIsValid}
-			<button class="secondary" disabled={!newFolderName.trim()}>Create</button>
+			<button class="secondary" disabled={!newFolderName.trim()} aria-busy={awaitingResponse}>
+				Create
+			</button>
 		{/if}
 	</form>
+{:else if uploadingFiles}
+	<FileList fileList={uploadingFiles} />
 {:else}
-	<details role="list">
-		<summary class="outline" aria-haspopup="listbox">+</summary>
+	<details role="list" bind:this={menu}>
+		<summary class="outline" aria-haspopup="listbox" aria-busy={awaitingResponse}>+</summary>
 		<ul role="listbox">
 			<li>
 				<!-- svelte-ignore a11y-missing-attribute -->
@@ -76,14 +150,22 @@
 					<iconify-icon icon="ic:round-upload" width="36" height="36" />
 					Upload File
 				</a>
-				<form method="post" action="?/upload" style="display: none;">
-					<input
-						bind:this={fileInput}
-						type="file"
-						name="filename"
-						multiple
-						on:change={uploadFiles}
-					/>
+				<form
+					method="post"
+					action="?/upload"
+					enctype="multipart/form-data"
+					style="display: none;"
+					use:enhance={() => {
+						console.log('enhance');
+
+						awaitingResponse = true;
+						return async ({ update }) => {
+							await update();
+							awaitingResponse = false;
+						};
+					}}
+				>
+					<input bind:this={fileInput} type="file" name="file" multiple on:change={uploadFiles} />
 					<input type="submit" />
 				</form>
 			</li>

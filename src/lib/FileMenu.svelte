@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { enhance } from '$app/forms';
-	import type { FileListEntry } from '../routes/[token]/[...path]/proxy+page.server';
+	import type { FileListEntry } from './types';
 
 	export let file: FileListEntry;
 

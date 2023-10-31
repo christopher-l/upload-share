@@ -1,14 +1,21 @@
 import { building } from '$app/environment';
 import { ROOT_DIR } from '$env/static/private';
-import { lstat, mkdir, readFile, readdir, rm } from 'fs/promises';
+import { lstat, mkdir, readFile, readdir, rm, writeFile } from 'fs/promises';
 import mime from 'mime';
 import { join } from 'path';
 import { deleteTokenForPath, getToken } from './tokens';
 
+export interface ErrnoException extends Error {
+	errno?: number;
+	code?: string;
+	path?: string;
+	syscall?: string;
+	stack?: string;
+}
+
 export interface FileEntry {
 	name: string;
 	type: string | null;
-	modifiedTime: Date;
 }
 
 export interface RootFileEntry extends FileEntry {
@@ -43,7 +50,7 @@ async function listSubDir(path: string[]): Promise<FileEntry[]> {
 	return await _listFiles(join(ROOT_DIR, ...path));
 }
 
-async function _listFiles(path: string): Promise<FileEntry[]> {
+async function _listFiles(path: string): Promise<(FileEntry & { modifiedTime: Date })[]> {
 	const files = await readdir(path);
 	const stats = await Promise.all(files.map((file) => lstat(join(path, file))));
 
@@ -86,16 +93,10 @@ async function createRootDirIfNeeded(): Promise<void> {
 	if (!ROOT_DIR) {
 		return;
 	}
-	try {
-		await lstat(ROOT_DIR);
-		return;
-	} catch (e) {
-		if (e.code !== 'ENOENT') {
-			throw e;
-		}
+	if (!(await exists(''))) {
+		console.log('Creating root directory', ROOT_DIR);
+		await mkdir(ROOT_DIR);
 	}
-	console.log('Creating root directory', ROOT_DIR);
-	await mkdir(ROOT_DIR);
 }
 
 /**
@@ -114,4 +115,24 @@ export async function remove(path: string): Promise<void> {
 	if (!path.includes('/')) {
 		await deleteTokenForPath(path);
 	}
+}
+
+export async function createFile(path: string, content: Buffer): Promise<void> {
+	if (await exists(path)) {
+		throw { ...new Error('File exists'), code: 'EEXIST' };
+	}
+	console.log('Writing file', path);
+	await writeFile(join(ROOT_DIR, path), content);
+}
+
+async function exists(path: string): Promise<boolean> {
+	try {
+		await lstat(join(ROOT_DIR, path));
+		return true;
+	} catch (e) {
+		if ((e as ErrnoException).code !== 'ENOENT') {
+			throw e;
+		}
+	}
+	return false;
 }

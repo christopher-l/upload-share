@@ -1,21 +1,19 @@
 import { hasValidUploadToken } from '$lib/server/authentication';
 import {
+	createFile,
 	createFolder,
 	getEntryType,
 	listDir,
 	remove,
-	type FileEntry,
+	type ErrnoException,
 	type RootFileEntry
 } from '$lib/server/filesystem';
 import { getDownloadHref, getFilePath } from '$lib/server/utils';
+import type { FileListEntry } from '$lib/types.js';
 import { getUrlPath } from '$lib/utils.js';
 import { error, redirect } from '@sveltejs/kit';
 import { join } from 'path';
 import type { PageServerLoad, RouteParams } from './$types.js';
-
-export interface FileListEntry extends FileEntry {
-	downloadHref: string | null;
-}
 
 export const load: PageServerLoad<{
 	fileList: Promise<FileListEntry[]>;
@@ -48,7 +46,7 @@ export const actions = {
 		try {
 			await createFolder(newFolderPath);
 		} catch (e) {
-			if (e.code === 'EEXIST') {
+			if ((e as ErrnoException).code === 'EEXIST') {
 				throw error(409);
 			} else {
 				throw error(500);
@@ -69,12 +67,34 @@ export const actions = {
 		try {
 			await remove(deletePath);
 		} catch (e) {
-			if (e.code === 'ENOENT') {
+			if ((e as ErrnoException).code === 'ENOENT') {
 				throw error(404);
 			} else {
 				throw error(500);
 			}
 		}
+	},
+	upload: async ({ cookies, request, params }) => {
+		if (!hasValidUploadToken(request, cookies)) {
+			throw error(401);
+		}
+		const directoryPath = await getFilePath(params);
+		const data = await request.formData();
+		const files = data.getAll('file') as File[];
+		await Promise.all(
+			files.map(async (file) => {
+				const arrayBuffer = await file.arrayBuffer();
+				const buffer = Buffer.from(arrayBuffer);
+				try {
+					await createFile(join(...directoryPath, file.name), buffer);
+				} catch (e) {
+					if ((e as ErrnoException).code === 'EEXIST') {
+						throw error(409);
+					}
+					throw e;
+				}
+			})
+		);
 	}
 };
 

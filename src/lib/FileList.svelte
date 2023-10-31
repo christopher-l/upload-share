@@ -1,15 +1,11 @@
 <script lang="ts">
 	import { page } from '$app/stores';
-	import type { FileListEntry } from '../routes/[token]/[...path]/+page.server';
 	import FileMenu from './FileMenu.svelte';
-	import NewButton from './NewButton.svelte';
-	import ShareUrl from './ShareUrl.svelte';
-	import type { FileEntry } from './server/filesystem';
+	import type { FileListEntry } from './types';
 	import { isRootFileEntry } from './utils';
 
 	export let fileList: FileListEntry[];
-	export let hasUploadToken: boolean;
-	export let filePath: string[];
+	export let showFileMenu = false;
 
 	const iconMap = {
 		'inode/directory': 'mdi:folder',
@@ -21,7 +17,10 @@
 		other: 'mdi:file'
 	};
 
-	$: getHref = (entry: FileEntry) => {
+	$: getHref = (entry: FileListEntry) => {
+		if (entry.progress != null || entry.error) {
+			return null;
+		}
 		if (isRootFileEntry(entry)) {
 			return entry.token;
 		} else {
@@ -37,47 +36,23 @@
 			iconMap.other
 		);
 	}
-
-	$: getBreadcrumbsHref = (index: number) => {
-		if (index === filePath.length - 2) {
-			return '.';
-		} else {
-			return Array(filePath.length - index - 2)
-				.fill('..')
-				.join('/');
-		}
-	};
 </script>
 
-{#if hasUploadToken && filePath.length > 0}
-	<ShareUrl url={$page.url.toString()} />
-{/if}
-
-{#if filePath.length > 0}
-	<nav aria-label="breadcrumb">
-		<ul>
-			{#each filePath as component, i}
-				{#if i < filePath.length - 1}
-					<li><a href={getBreadcrumbsHref(i)}>{component}</a></li>
-				{:else}
-					<li>{component}</li>
-				{/if}
-			{/each}
-		</ul>
-	</nav>
-{/if}
-
-{#if hasUploadToken}
-	<NewButton />
-{/if}
 <ul class="file-list">
 	{#each fileList as file (file.name)}
 		<li>
+			{#if file.progress != null}
+				<progress value={file.progress ?? 0.5} class:error={file.error} />
+			{/if}
 			<a href={getHref(file)}>
 				<iconify-icon icon={getIcon(file.type)} width="36" height="36" />
 				<span>{file.name}</span>
 			</a>
-			{#if hasUploadToken}
+			{#if file.abort}
+				<button class="standard icon" on:click={() => file.abort?.()}>
+					<iconify-icon icon="mdi:close-circle" width="36" height="36" />
+				</button>
+			{:else if showFileMenu}
 				<FileMenu {file} />
 			{:else if file.downloadHref}
 				<a href={file.downloadHref} download class="standard icon">
@@ -97,6 +72,7 @@
 	ul.file-list {
 		padding: 0;
 		li {
+			position: relative;
 			list-style: none;
 			display: flex;
 			border-radius: var(--border-radius);
@@ -104,7 +80,19 @@
 			&:focus-within {
 				background-color: var(--secondary-focus);
 			}
-			a:first-child {
+			progress {
+				position: absolute;
+				opacity: 0.5;
+				height: 100%;
+				z-index: -1;
+				&.error {
+					background-color: var(--form-element-invalid-focus-color);
+					&::-webkit-progress-value {
+						background-color: var(--del-color);
+					}
+				}
+			}
+			a:first-of-type {
 				flex-grow: 1;
 				display: flex;
 				align-items: center;
