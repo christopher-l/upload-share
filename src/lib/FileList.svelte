@@ -90,6 +90,9 @@
 					&::-webkit-progress-value {
 						background-color: var(--del-color);
 					}
+					&::-moz-progress-bar {
+						background-color: var(--del-color);
+					}
 				}
 			}
 			a:first-of-type {
