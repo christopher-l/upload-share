@@ -10,3 +10,4 @@ services:
     environment:
       - UPLOAD_TOKEN=${UPLOAD_TOKEN}
       - ORIGIN=${ORIGIN}
+      - BODY_SIZE_LIMIT=0
