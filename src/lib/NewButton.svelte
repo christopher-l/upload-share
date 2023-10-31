@@ -15,7 +15,10 @@
 	let awaitingResponse = false;
 
 	let fileInput: HTMLInputElement;
+	/** File list of files that are currently being uploaded. */
 	let uploadingFiles: FileListEntry[] | null;
+	/** Whether the user is currently dragging a file above the page. */
+	let dragging = false;
 
 	$: nameIsValid = !newFolderName.includes('/');
 
@@ -23,6 +26,7 @@
 		creatingFolder = false;
 		awaitingResponse = false;
 		uploadingFiles = null;
+		dragging = false;
 	}
 
 	/** Prompts the user to choose a name for a new folder to create. */
@@ -36,9 +40,8 @@
 		input.select();
 	}
 
-	function uploadFiles(): void {
-		menu.removeAttribute('open');
-		const files = fileInput.files;
+	function uploadFiles(files = fileInput.files): void {
+		menu?.removeAttribute('open');
 		if (!files) {
 			return;
 		}
@@ -100,6 +103,26 @@
 	}
 </script>
 
+<svelte:document />
+
+<svelte:body
+	on:drop|preventDefault={(event) => {
+		dragging = false;
+		uploadFiles(event.dataTransfer?.files);
+	}}
+	on:dragover|preventDefault
+	on:dragenter|capture={(event) => {
+		if (!event.relatedTarget && event.dataTransfer?.files) {
+			dragging = true;
+		}
+	}}
+	on:dragleave|capture={(event) => {
+		if (!event.relatedTarget) {
+			dragging = false;
+		}
+	}}
+/>
+
 {#if creatingFolder}
 	<form
 		method="POST"
@@ -131,7 +154,9 @@
 	<FileList fileList={uploadingFiles} />
 {:else}
 	<details role="list" bind:this={menu}>
-		<summary class="outline" aria-haspopup="listbox" aria-busy={awaitingResponse}>+</summary>
+		<summary class="outline" class:dragging aria-haspopup="listbox" aria-busy={awaitingResponse}>
+			+
+		</summary>
 		<ul role="listbox">
 			<li>
 				<!-- svelte-ignore a11y-missing-attribute -->
@@ -165,7 +190,13 @@
 						};
 					}}
 				>
-					<input bind:this={fileInput} type="file" name="file" multiple on:change={uploadFiles} />
+					<input
+						bind:this={fileInput}
+						type="file"
+						name="file"
+						multiple
+						on:change={() => uploadFiles()}
+					/>
 					<input type="submit" />
 				</form>
 			</li>
@@ -199,6 +230,9 @@
 	}
 	summary {
 		text-align: center;
+		&.dragging {
+			background-color: var(--form-element-valid-focus-color);
+		}
 	}
 	details a {
 		display: flex;

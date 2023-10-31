@@ -43,7 +43,6 @@
 	</nav>
 </header>
 
-
 <main class="container">
 	<slot />
 </main>
@@ -72,4 +71,3 @@
 		padding: var(--block-spacing-vertical) var(--block-spacing-horizontal);
 	}
 </style>
-
