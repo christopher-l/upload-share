@@ -19,12 +19,12 @@ export function hasValidUploadToken(request: Request, cookies: Cookies): boolean
 	}
 	if (cookies.get('token') === env.UPLOAD_TOKEN) {
 		// Renew cookie to prolong expiration date.
-		cookies.set('token', env.UPLOAD_TOKEN, { expires: new Date(2147483647000) });
+		cookies.set('token', env.UPLOAD_TOKEN, { path: '/', expires: new Date(2147483647000) });
 		return true;
 	}
 	const url = parse(request.url, true);
 	if (url.query.token === env.UPLOAD_TOKEN) {
-		cookies.set('token', url.query.token, { expires: new Date(2147483647000) });
+		cookies.set('token', url.query.token, { path: '/', expires: new Date(2147483647000) });
 		return true;
 	}
 	return false;
