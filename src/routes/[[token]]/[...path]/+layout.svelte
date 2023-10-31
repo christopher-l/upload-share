@@ -61,6 +61,7 @@
 		width: 60px;
 	}
 	h1 {
+		min-width: 0;
 		margin: 0;
 		font-size: 1.5em;
 		padding: 0.25em;
