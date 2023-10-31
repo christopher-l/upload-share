@@ -1,31 +1,34 @@
+import { error } from '@sveltejs/kit';
 import { getPathForToken } from './tokens';
 
-
-export async function getFilePath(params: { token: string; path: string }): Promise<string | null> {
-	let path = await getPathForToken(params.token);
+export async function getFilePath(params: { token?: string; path?: string }): Promise<string[]> {
+	if (!params.token) {
+		return [];
+	}
+	const rootPath = await getPathForToken(params.token);
+	if (!rootPath) {
+		throw error(404);
+	}
 	if (
-		params.path &&
+		!params.path ||
 		// We use an additional '/' character to indicate that we appended the filename for a
 		// root-level file to the URL. In this case, the actual file was already indicated by the
 		// token and we discard `params.path` (after checking, that it matches the filename
 		// indicated by the token).
-		params.path !== `/${path}`
+		params.path === `/${rootPath}`
 	) {
-		path += '/' + params.path;
+		return [rootPath];
 	}
-	return path;
+	return [rootPath, ...params.path.split('/')];
 }
 
 /**
  * Returns the download HREF for the given file.
- * 
+ *
  * @param token The root entry's download token.
  * @param filePath The file's complete path as provided by the root `+layout.server.ts`.
  */
-export function getDownloadHref(
-	token: string,
-	filePath: string[]
-): string {
+export function getDownloadHref(token: string, filePath: string[]): string {
 	const [rootPath, ...subPath] = filePath;
 	if (subPath.length > 0) {
 		return `/download/${token}/${subPath.join('')}`;

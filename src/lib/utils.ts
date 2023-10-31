@@ -1,11 +1,13 @@
 import type { FileEntry, RootFileEntry } from './server/filesystem';
 
-export function getUrlPath(params: { token: string; path: string }): string {
-	let path = params.token;
-	if (params.path) {
-		path += '/' + params.path;
+export function getUrlPath(params: { token?: string; path?: string }): string {
+	if (!params.token) {
+		return '';
+	} else if (!params.path) {
+		return params.token;
+	} else {
+		return `${params.token}/${params.path}`;
 	}
-	return path;
 }
 
 export function isRootFileEntry(entry: FileEntry): entry is RootFileEntry {
