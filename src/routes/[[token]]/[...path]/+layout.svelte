@@ -2,8 +2,7 @@
 	import { page } from '$app/stores';
 	import { backTarget, downloadTarget } from '$lib/stores';
 	import { getUrlPath } from '$lib/utils';
-	import type { RouteParams } from './$types';
-	import type { PageData } from './$types';
+	import type { PageData, RouteParams } from './$types';
 
 	export let data: PageData;
 

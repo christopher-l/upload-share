@@ -20,7 +20,7 @@
 	}
 </script>
 
-{#if data.hasUploadToken}
+{#if data.hasUploadToken && !$page.url.searchParams.has('select-destination')}
 	<ShareUrl url={$page.url.toString().replace(/\/preview$/, '')} />
 {/if}
 

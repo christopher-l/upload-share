@@ -1,11 +1,8 @@
 <script lang="ts">
 	import { enhance } from '$app/forms';
-	import { invalidateAll } from '$app/navigation';
 	import { navigating } from '$app/stores';
-	import { cubicOut } from 'svelte/easing';
-	import { tweened } from 'svelte/motion';
 	import FileList from './FileList.svelte';
-	import type { FileListEntry } from './types';
+	import { uploadFiles as doUploadFiles, uploadingFiles } from './uploadFiles';
 
 	let menu: HTMLDetailsElement;
 	/** The user chose to create a new folder and is currently prompted to choose a name. */
@@ -15,8 +12,6 @@
 	let awaitingResponse = false;
 
 	let fileInput: HTMLInputElement;
-	/** File list of files that are currently being uploaded. */
-	let uploadingFiles: FileListEntry[] | null;
 	/** Whether the user is currently dragging a file above the page. */
 	let dragging = false;
 
@@ -25,7 +20,6 @@
 	$: if ($navigating) {
 		creatingFolder = false;
 		awaitingResponse = false;
-		uploadingFiles = null;
 		dragging = false;
 	}
 
@@ -42,64 +36,7 @@
 
 	function uploadFiles(files = fileInput.files): void {
 		menu?.removeAttribute('open');
-		if (!files) {
-			return;
-		}
-		Promise.all([...files].map(uploadFile))
-			.then(() => {
-				uploadingFiles = null;
-				invalidateAll();
-			})
-			.catch((e) => {
-				console.log('catch', uploadingFiles);
-
-				console.error(e);
-			});
-	}
-
-	function uploadFile(file: File): Promise<void> {
-		console.log('uploadFile', file);
-		const ajax = new XMLHttpRequest();
-		const fileEntry: FileListEntry = {
-			name: file.name,
-			type: file.type,
-			progress: 0,
-			abort: () => ajax.abort()
-		};
-		const progress = tweened(0, { easing: cubicOut });
-		const unsubscribe = progress.subscribe((progress) => {
-			fileEntry.progress = progress;
-			uploadingFiles = uploadingFiles;
-		});
-		function onProgress(event: ProgressEvent): void {
-			progress.set(event.loaded / event.total);
-		}
-		const formdata = new FormData();
-		formdata.append('file', file);
-		uploadingFiles = [...(uploadingFiles ?? []), fileEntry];
-		ajax.upload.addEventListener('progress', onProgress);
-		return new Promise<void>((resolve, reject) => {
-			ajax.addEventListener('load', (e) => {
-				if (ajax.status === 200) {
-					resolve();
-				} else {
-					console.log('!== 200', ajax);
-					fileEntry.progress = 1;
-					fileEntry.abort = undefined;
-					fileEntry.error = true;
-					uploadingFiles = uploadingFiles;
-					reject(ajax.statusText);
-				}
-			});
-			ajax.addEventListener('error', (e) => {
-				fileEntry.error = true;
-				uploadingFiles = uploadingFiles;
-				reject(e);
-			});
-			ajax.addEventListener('abort', () => resolve());
-			ajax.open('POST', '?/upload');
-			ajax.send(formdata);
-		}).finally(unsubscribe);
+		doUploadFiles(files);
 	}
 </script>
 
@@ -150,8 +87,8 @@
 			</button>
 		{/if}
 	</form>
-{:else if uploadingFiles}
-	<FileList fileList={uploadingFiles} />
+{:else if $uploadingFiles}
+	<FileList fileList={$uploadingFiles} />
 {:else}
 	<details role="list" bind:this={menu}>
 		<summary class="outline" class:dragging aria-haspopup="listbox" aria-busy={awaitingResponse}>
@@ -181,8 +118,6 @@
 					enctype="multipart/form-data"
 					style="display: none;"
 					use:enhance={() => {
-						console.log('enhance');
-
 						awaitingResponse = true;
 						return async ({ update }) => {
 							await update();

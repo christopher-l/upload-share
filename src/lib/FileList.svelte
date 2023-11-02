@@ -102,6 +102,7 @@
 				gap: var(--spacing);
 				padding: 0 var(--spacing);
 				--color: inherit;
+				overflow-wrap: anywhere;
 				&:hover,
 				&:focus {
 					text-decoration: unset;

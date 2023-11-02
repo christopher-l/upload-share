@@ -3,16 +3,25 @@
 	import FileList from '$lib/FileList.svelte';
 	import NewButton from '$lib/NewButton.svelte';
 	import ShareUrl from '$lib/ShareUrl.svelte';
-	import { downloadTarget } from '$lib/stores';
+	import { downloadTarget, selectDestination } from '$lib/stores';
+	import { onMount } from 'svelte';
 	import Breadcrumbs from '../../../lib/Breadcrumbs.svelte';
+	import UploadHereButton from '../../../lib/UploadHereButton.svelte';
 	import type { PageData } from './$types';
 
 	export let data: PageData;
 
 	downloadTarget.set(null);
+	onMount(() => {
+		if ($page.url.searchParams.has('select-destination')) {
+			selectDestination.set(true);
+		}
+	});
 </script>
 
-{#if data.hasUploadToken && data.filePath.length > 0}
+{#if data.hasUploadToken && $selectDestination}
+	<UploadHereButton />
+{:else if data.hasUploadToken && data.filePath.length > 0}
 	<ShareUrl url={$page.url.toString()} />
 {/if}
 

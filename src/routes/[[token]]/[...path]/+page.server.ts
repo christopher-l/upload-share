@@ -107,7 +107,7 @@ export const actions = {
 async function getFileList(filePath: string[], token?: string): Promise<FileListEntry[]> {
 	const list = await listDir(filePath);
 	return list.map((entry) => {
-		let downloadHref: string | null = null;
+		let downloadHref: string | undefined;
 		if (entry.type !== 'inode/directory') {
 			const entryToken = token ?? (entry as RootFileEntry).token;
 			downloadHref = getDownloadHref(entryToken, [...filePath, entry.name]);

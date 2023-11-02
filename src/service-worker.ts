@@ -15,6 +15,8 @@ const ASSETS = [
 	...files // everything in `static`
 ];
 
+let pwaShareFiles: File[] | null = null;
+
 sw.addEventListener('install', (event) => {
 	// Create a new cache and add all files to it
 	async function addFilesToCache() {
@@ -38,7 +40,6 @@ sw.addEventListener('activate', (event) => {
 
 sw.addEventListener('fetch', (event) => {
 	const url = new URL(event.request.url);
-	console.log(url);
 
 	async function respondGet() {
 		const url = new URL(event.request.url);
@@ -50,17 +51,28 @@ sw.addEventListener('fetch', (event) => {
 		return fetch(event.request);
 	}
 
-	async function respondPwaShare() {
-		console.log('respondPwaShare');
-		return Response.redirect('/');
+	async function respondPostPwaShare() {
+		const data = await event.request.formData();
+		pwaShareFiles = data.getAll('files') as File[];
+		return Response.redirect('/?select-destination');
 	}
 
-	if (event.request.method === 'GET') {
+	async function respondGetPwaShareFiles() {
+		const formdata = new FormData();
+		for (const file of pwaShareFiles!) {
+			formdata.append('files', file);
+		}
+		return new Response(formdata);
+	}
+
+	if (event.request.method === 'GET' && url.pathname === '/pwa-share-files' && pwaShareFiles) {
+		event.respondWith(respondGetPwaShareFiles());
+	} else if (event.request.method === 'GET') {
 		event.respondWith(respondGet());
 	} else if (event.request.method === 'POST') {
 		const url = new URL(event.request.url);
 		if (url.pathname === '/pwa-share') {
-			event.respondWith(respondPwaShare());
+			event.respondWith(respondPostPwaShare());
 		}
 	}
 });
