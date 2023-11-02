@@ -13,7 +13,7 @@
 		{ "src": "favicon-512.png", "sizes": "512x512", "type": "image/png" }
 	],
 	"share_target": {
-		"action": "/?/upload",
+		"action": "/pwa-share",
 		"method": "POST",
 		"enctype": "multipart/form-data",
 		"params": { "files": [{ "name": "files", "accept": ["*/*", ".*"] }] }
