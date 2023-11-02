@@ -26,7 +26,7 @@
 	/** Prompts the user to choose a name for a new folder to create. */
 	function newFolder(): void {
 		creatingFolder = true;
-		newFolderName = 'New Folder';
+		newFolderName = new Date().toISOString().split('T')[0];
 	}
 
 	function initNewFolder(input: HTMLInputElement): void {
