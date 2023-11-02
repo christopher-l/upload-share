@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { assets } from '$app/paths';
 	import { page } from '$app/stores';
 	import { backTarget, downloadTarget } from '$lib/stores';
 	import { getUrlPath } from '$lib/utils';
@@ -20,6 +21,9 @@
 
 <svelte:head>
 	<title>{title}</title>
+	{#if data.hasUploadToken}
+		<link rel="manifest" href={`${assets}/manifest.json`} />
+	{/if}
 </svelte:head>
 
 <header>
