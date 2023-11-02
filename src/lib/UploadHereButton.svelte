@@ -1,6 +1,4 @@
 <script lang="ts">
-	import { goto } from '$app/navigation';
-	import { page } from '$app/stores';
 	import { selectDestination } from './stores';
 	import { uploadFiles } from './uploadFiles';
 
@@ -9,7 +7,6 @@
 		const data = await response.formData();
 		const files = data.getAll('files') as File[];
 		selectDestination.set(false);
-		goto($page.url.pathname, { replaceState: true }); // Remove `select-destination` query parameter
 		uploadFiles(files);
 	}
 </script>

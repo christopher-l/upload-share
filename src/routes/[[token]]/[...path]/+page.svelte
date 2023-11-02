@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { goto } from '$app/navigation';
 	import { page } from '$app/stores';
 	import FileList from '$lib/FileList.svelte';
 	import NewButton from '$lib/NewButton.svelte';
@@ -15,6 +16,7 @@
 	onMount(() => {
 		if ($page.url.searchParams.has('select-destination')) {
 			selectDestination.set(true);
+			goto($page.url.pathname, { replaceState: true }); // Remove `select-destination` query parameter
 		}
 	});
 </script>
