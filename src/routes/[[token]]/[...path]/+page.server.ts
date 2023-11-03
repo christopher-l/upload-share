@@ -3,12 +3,10 @@ import {
 	createFile,
 	createFolder,
 	getEntryType,
-	listDir,
 	remove,
-	type ErrnoException,
-	type RootFileEntry
+	type ErrnoException
 } from '$lib/server/filesystem';
-import { getDownloadHref, getFilePath } from '$lib/server/utils';
+import { getFileList, getFilePath } from '$lib/server/utils';
 import type { FileListEntry } from '$lib/types.js';
 import { getUrlPath } from '$lib/utils.js';
 import { error, redirect } from '@sveltejs/kit';
@@ -97,21 +95,3 @@ export const actions = {
 		);
 	}
 };
-
-/**
- * Returns a file listing for the root directory or a sub directory.
- *
- * @param filePath The complete file path to the subdirectory including to root directory.
- * @param token The root directory's download token.
- */
-async function getFileList(filePath: string[], token?: string): Promise<FileListEntry[]> {
-	const list = await listDir(filePath);
-	return list.map((entry) => {
-		let downloadHref: string | undefined;
-		if (entry.type !== 'inode/directory') {
-			const entryToken = token ?? (entry as RootFileEntry).token;
-			downloadHref = getDownloadHref(entryToken, [...filePath, entry.name]);
-		}
-		return { ...entry, downloadHref };
-	});
-}

@@ -1,9 +1,9 @@
 <script lang="ts">
+	import { browser } from '$app/environment';
 	import { page } from '$app/stores';
 	import { downloadTarget } from '$lib/stores';
-	import { onMount } from 'svelte';
-	import type { PageData } from './$types';
 	import ShareUrl from '../../../../lib/ShareUrl.svelte';
+	import type { PageData } from './$types';
 
 	export let data: PageData;
 
@@ -11,12 +11,10 @@
 	$: filename = data.filePath[data.filePath.length - 1];
 
 	let text: string;
-	if (data.mimetype?.startsWith('text/')) {
-		onMount(() =>
-			fetch(data.downloadHref)
-				.then((response) => response.text())
-				.then((t) => (text = t))
-		);
+	$: if (browser && data.mimetype?.startsWith('text/')) {
+		fetch(data.downloadHref)
+			.then((response) => response.text())
+			.then((t) => (text = t));
 	}
 </script>
 

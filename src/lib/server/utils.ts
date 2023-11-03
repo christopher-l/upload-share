@@ -1,4 +1,6 @@
 import { error } from '@sveltejs/kit';
+import type { FileListEntry } from '../types';
+import { listDir, type RootFileEntry } from './filesystem';
 import { getPathForToken } from './tokens';
 
 export async function getFilePath(params: { token?: string; path?: string }): Promise<string[]> {
@@ -31,7 +33,7 @@ export async function getFilePath(params: { token?: string; path?: string }): Pr
 export function getDownloadHref(token: string, filePath: string[]): string {
 	const [rootPath, ...subPath] = filePath;
 	if (subPath.length > 0) {
-		return `/download/${token}/${subPath.join('')}`;
+		return `/download/${token}/${subPath.join('/')}`;
 	} else {
 		// We append the filename to the URL, so the browser has the correct name when downloading
 		// and so it will have the correct extension when used in `src` tags. The `download`
@@ -39,4 +41,22 @@ export function getDownloadHref(token: string, filePath: string[]): string {
 		// identify this scenario.
 		return `/download/${token}//${rootPath}`;
 	}
+}
+
+/**
+ * Returns a file listing for the root directory or a sub directory.
+ *
+ * @param filePath The complete file path to the subdirectory including to root directory.
+ * @param token The root directory's download token.
+ */
+export async function getFileList(filePath: string[], token?: string): Promise<FileListEntry[]> {
+	const list = await listDir(filePath);
+	return list.map((entry) => {
+		let downloadHref: string | undefined;
+		if (entry.type !== 'inode/directory') {
+			const entryToken = token ?? (entry as RootFileEntry).token;
+			downloadHref = getDownloadHref(entryToken, [...filePath, entry.name]);
+		}
+		return { ...entry, downloadHref };
+	});
 }

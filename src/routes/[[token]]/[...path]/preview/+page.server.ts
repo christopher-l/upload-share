@@ -10,8 +10,11 @@ export const load: PageServerLoad<{
 	if (!params.token) {
 		throw error(404);
 	}
-	const filePath = (await parent()).filePath;
+	const data = await parent();
+	const filePath = data.filePath;
 	const downloadHref = getDownloadHref(params.token, filePath);
-	const mimetype = mime.getType(filePath[filePath.length - 1]);
+	const currentItemName = filePath[filePath.length - 1];
+	const mimetype = mime.getType(currentItemName);
+
 	return { downloadHref, mimetype };
 };
