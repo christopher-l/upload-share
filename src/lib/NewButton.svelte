@@ -110,7 +110,7 @@
 				<!-- svelte-ignore a11y-no-static-element-interactions -->
 				<a on:click={() => fileInput.click()}>
 					<iconify-icon icon="ic:round-upload" width="36" height="36" />
-					Upload File
+					Upload Files
 				</a>
 				<form
 					method="post"
