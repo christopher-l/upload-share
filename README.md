@@ -46,3 +46,9 @@ docker load -i upload-share.tar
 ## Deploying With Docker Compose
 
 The application can be deployed using the provided `docker-compose.yml`. Configuration has to be provided with an `.env` file in the same directory.
+
+## License
+
+This software is distributed under the [GNU General Public License Version 3](./LICENSE).
+
+The icon is based on a [Material Design Icon](https://github.com/material-icons/material-icons/blob/master/svg/download/round.svg) licensed under the [Apache License 2.0](https://github.com/material-icons/material-icons/blob/master/LICENSE).
