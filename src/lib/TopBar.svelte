@@ -33,9 +33,6 @@
 	.center {
 		padding: calc(var(--spacing) / 2) var(--spacing);
 	}
-	a {
-		border-radius: var(--border-radius);
-	}
 	a:not([href]) {
 		visibility: hidden;
 	}

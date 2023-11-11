@@ -21,6 +21,10 @@ main {
 	flex-direction: column;
 }
 
+a {
+	border-radius: var(--border-radius);
+}
+
 button,
 [role='button'],
 a {

@@ -75,6 +75,7 @@
 			position: relative;
 			list-style: none;
 			display: flex;
+			align-items: center;
 			border-radius: var(--border-radius);
 			&:hover,
 			&:focus-within {
