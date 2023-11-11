@@ -44,4 +44,7 @@
 	object {
 		flex-grow: 1;
 	}
+	audio {
+		width: 100%;
+	}
 </style>
