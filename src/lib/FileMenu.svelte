@@ -68,6 +68,7 @@
 
 <style lang="scss">
 	details {
+		align-self: center;
 		margin: 0;
 		summary {
 			&::after {

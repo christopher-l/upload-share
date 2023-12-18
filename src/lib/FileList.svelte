@@ -75,7 +75,6 @@
 			position: relative;
 			list-style: none;
 			display: flex;
-			align-items: center;
 			border-radius: var(--border-radius);
 			&:hover,
 			&:focus-within {
@@ -86,6 +85,7 @@
 				opacity: 0.5;
 				height: 100%;
 				z-index: -1;
+				margin: 0;
 				&.error {
 					background-color: var(--form-element-invalid-focus-color);
 					&::-webkit-progress-value {
