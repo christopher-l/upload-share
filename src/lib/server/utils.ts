@@ -49,16 +49,22 @@ export async function getActualPath(params: { token?: string; path?: string }): 
  *
  * @param token The root entry's download token.
  */
-export function getDownloadHref(token: string, virtualPath: string[]): string {
+export function getDownloadHref(
+	token: string,
+	virtualPath: string[],
+	isDirectory: boolean
+): string {
 	const [rootPath, ...subPath] = virtualPath;
+	const suffix = isDirectory ? '.zip' : '';
+	const path = isDirectory ? 'archive' : 'download';
 	if (subPath.length > 0) {
-		return `/download/${token}/${subPath.join('/')}`;
+		return `/${path}/${token}/${subPath.join('/')}${suffix}`;
 	} else {
 		// We append the filename to the URL, so the browser has the correct name when downloading
 		// and so it will have the correct extension when used in `src` tags. The `download`
 		// endpoint needs to strip this when received. We use the additional '/' character to
 		// identify this scenario.
-		return `/download/${token}//${rootPath}`;
+		return `/${path}/${token}//${rootPath}${suffix}`;
 	}
 }
 
@@ -74,10 +80,12 @@ export async function getFileList(params: {
 	const list = await listDir(actualPath);
 	return list.map((entry) => {
 		let downloadHref: string | undefined;
-		if (entry.type !== 'inode/directory') {
-			const entryToken = params.token ?? (entry as RootFileEntry).token;
-			downloadHref = getDownloadHref(entryToken, [...virtualPath, entry.name]);
-		}
+		const entryToken = params.token ?? (entry as RootFileEntry).token;
+		downloadHref = getDownloadHref(
+			entryToken,
+			[...virtualPath, entry.name],
+			entry.type === 'inode/directory'
+		);
 		return { ...entry, downloadHref };
 	});
 }

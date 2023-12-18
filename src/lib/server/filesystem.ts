@@ -1,6 +1,7 @@
 import { building } from '$app/environment';
 import { ROOT_DIR } from '$env/static/private';
 import { error } from '@sveltejs/kit';
+import AdmZip from 'adm-zip';
 import { fileTypeFromBuffer } from 'file-type';
 import { lstat, mkdir, readFile, readdir, rm, writeFile } from 'fs/promises';
 import mime from 'mime';
@@ -145,6 +146,13 @@ export async function createFile(name: string, path: string[], content: Buffer):
 		console.log('Writing file', filePath);
 		await writeFile(filePath, content);
 	}
+}
+
+export async function getZipArchive(path: string[]): Promise<Buffer> {
+	const zip = new AdmZip();
+	await zip.addLocalFolderPromise(join(ROOT_DIR, ...path), {});
+	const buffer = await zip.toBufferPromise();
+	return buffer;
 }
 
 async function exists(path: string): Promise<boolean> {

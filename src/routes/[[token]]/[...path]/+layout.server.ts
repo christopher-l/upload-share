@@ -1,6 +1,6 @@
 import { hasValidUploadToken } from '$lib/server/authentication';
 import { getEntryType, listDir } from '$lib/server/filesystem';
-import { getActualPath, getVirtualPath } from '$lib/server/utils';
+import { getActualPath, getDownloadHref, getVirtualPath } from '$lib/server/utils';
 import type { FileListEntry, NavLinks } from '$lib/types';
 import { error } from '@sveltejs/kit';
 import type { LayoutParams, LayoutServerLoad } from './$types';
@@ -16,6 +16,7 @@ export const load: LayoutServerLoad<{
 	entryType: 'file' | 'directory';
 	/** Links for adjacent-page navigation. */
 	navLinks: NavLinks | null;
+	downloadHref: string | null;
 }> = async ({ params, request, cookies }) => {
 	const hasUploadToken = hasValidUploadToken(request, cookies);
 	if (!hasUploadToken && !params.token) {
@@ -31,7 +32,8 @@ export const load: LayoutServerLoad<{
 		hasUploadToken,
 		virtalPath,
 		entryType,
-		navLinks: entryType === 'file' ? await getNavLinks({ params, actualPath }) : null
+		navLinks: entryType === 'file' ? await getNavLinks({ params, actualPath }) : null,
+		downloadHref: params.token ? getDownloadHref(params.token, virtalPath, entryType === 'directory') : null
 	};
 };
 

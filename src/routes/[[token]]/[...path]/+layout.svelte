@@ -3,7 +3,7 @@
 	import { page } from '$app/stores';
 	import ItemNav from '$lib/ItemNav.svelte';
 	import TopBar from '$lib/TopBar.svelte';
-	import { backTarget } from '$lib/stores';
+	import { backTarget, downloadTarget } from '$lib/stores';
 	import { getUrlPath } from '$lib/utils';
 	import type { PageData, RouteParams } from './$types';
 
@@ -11,6 +11,7 @@
 
 	$: title = data.virtalPath.length ? data.virtalPath[data.virtalPath.length - 1] : 'Upload Share';
 	$: path = getUrlPath($page.params as RouteParams);
+	$: downloadTarget.set(data.downloadHref);
 	// Don't show the back button to the root directory for users without upload token.
 	$: if (path.split('/').length > 1) {
 		backTarget.set(`/${path.split('/').slice(0, -1).join('/')}`);

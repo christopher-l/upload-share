@@ -4,7 +4,7 @@
 	import FileList from '$lib/FileList.svelte';
 	import NewButton from '$lib/NewButton.svelte';
 	import ShareUrl from '$lib/ShareUrl.svelte';
-	import { downloadTarget, selectDestination } from '$lib/stores';
+	import { selectDestination } from '$lib/stores';
 	import { onMount } from 'svelte';
 	import Breadcrumbs from '../../../lib/Breadcrumbs.svelte';
 	import UploadHereButton from '../../../lib/UploadHereButton.svelte';
@@ -12,7 +12,6 @@
 
 	export let data: PageData;
 
-	downloadTarget.set(null);
 	onMount(() => {
 		if ($page.url.searchParams.has('select-destination')) {
 			selectDestination.set(true);
