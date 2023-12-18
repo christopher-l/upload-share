@@ -34,7 +34,9 @@ export async function listDir(path: string[]): Promise<FileEntry[]> {
 
 async function listRootDir(): Promise<RootFileEntry[]> {
 	const list = await listTokens();
-	return list.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+	return list
+		.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+		.map((entry) => ({ ...entry, type: mime.getType(entry.name) }));
 }
 
 async function listSubDir(path: string[]): Promise<FileEntry[]> {
@@ -99,7 +101,7 @@ async function createRootDirIfNeeded(): Promise<void> {
 export async function createFolder(name: string, path: string[]): Promise<void> {
 	console.log('Creating directory', name, path);
 	if (path.length === 0) {
-		const entry = await addToken(name, 'inode/directory');
+		const entry = await addToken(name);
 		await mkdir(join(ROOT_DIR, getPathForTokenEntry(entry)));
 	} else {
 		await mkdir(join(ROOT_DIR, ...path, name));
@@ -132,7 +134,7 @@ export async function removeSubPath(path: string): Promise<void> {
 
 export async function createFile(name: string, path: string[], content: Buffer): Promise<void> {
 	if (path.length === 0) {
-		const entry = await addToken(name, 'application/octet-stream');
+		const entry = await addToken(name);
 		console.log('Writing file', getPathForTokenEntry(entry));
 		await writeFile(join(ROOT_DIR, getPathForTokenEntry(entry)), content);
 	} else {

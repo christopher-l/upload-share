@@ -13,7 +13,6 @@ import type { ErrnoException } from './types';
 interface TokenEntry {
 	name: string;
 	date: string;
-	type: string;
 }
 
 /** Maps tokens to files and directories in the root directory. */
@@ -44,8 +43,8 @@ export function getPathForTokenEntry(entry: TokenEntry): string {
 	return `${entry.date} ${entry.name}`;
 }
 
-export async function addToken(name: string, type: string): Promise<TokenEntry> {
-	const entry = { name, type, date: new Date().toISOString() };
+export async function addToken(name: string): Promise<TokenEntry> {
+	const entry = { name, date: new Date().toISOString() };
 	const tokens = await getTokens();
 	tokens[generateToken()] = entry;
 	void writeTokensFile();
