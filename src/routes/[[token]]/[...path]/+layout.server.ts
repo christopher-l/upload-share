@@ -15,7 +15,7 @@ export const load: LayoutServerLoad<{
 	/** The entry type of the item referenced by the URL path. */
 	entryType: 'file' | 'directory';
 	/** Links for adjacent-page navigation. */
-	navLinks: Promise<{ next: string | null; previous: string | null } | null>;
+	navLinks: { next: string | null; previous: string | null } | null;
 }> = async ({ params, request, cookies }) => {
 	const hasUploadToken = hasValidUploadToken(request, cookies);
 	if (!hasUploadToken && !params.token) {
@@ -30,7 +30,7 @@ export const load: LayoutServerLoad<{
 		hasUploadToken,
 		filePath,
 		entryType,
-		navLinks: getNavLinks({ params, filePath })
+		navLinks: await getNavLinks({ params, filePath })
 	};
 };
 
