@@ -11,9 +11,9 @@ export const load: PageServerLoad<{
 		throw error(404);
 	}
 	const data = await parent();
-	const filePath = data.filePath;
-	const downloadHref = getDownloadHref(params.token, filePath);
-	const currentItemName = filePath[filePath.length - 1];
+	const virtalPath = data.virtalPath;
+	const downloadHref = getDownloadHref(params.token, virtalPath);
+	const currentItemName = virtalPath[virtalPath.length - 1];
 	const mimetype = mime.getType(currentItemName);
 
 	return { downloadHref, mimetype };

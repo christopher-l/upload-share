@@ -8,7 +8,7 @@
 	export let data: PageData;
 
 	$: downloadTarget.set(data.downloadHref);
-	$: filename = data.filePath[data.filePath.length - 1];
+	$: filename = data.virtalPath[data.virtalPath.length - 1];
 
 	let text: string;
 	$: if (browser && data.mimetype?.startsWith('text/')) {

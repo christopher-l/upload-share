@@ -1,14 +1,34 @@
 import { error } from '@sveltejs/kit';
 import type { FileListEntry } from '../types';
 import { listDir, type RootFileEntry } from './filesystem';
-import { getPathForToken } from './tokens';
+import { getPathForTokenEntry, getTokenEntry } from './tokens';
 
-export async function getFilePath(params: { token?: string; path?: string }): Promise<string[]> {
+/**
+ * Returns the visible path using the token entrie's name as first element.
+ */
+export async function getVirtualPath(params: { token?: string; path?: string }): Promise<string[]> {
 	if (!params.token) {
 		return [];
 	}
-	const rootPath = await getPathForToken(params.token);
-	if (!rootPath) {
+	const tokenEntry = await getTokenEntry(params.token);
+	if (!tokenEntry) {
+		throw error(404);
+	}
+	if (!params.path) {
+		return [tokenEntry.name];
+	}
+	return [tokenEntry.name, ...params.path.split('/')];
+}
+
+/**
+ * Returns the actual file path on disk, using the token entrie's date + name as first element.
+ */
+export async function getActualPath(params: { token?: string; path?: string }): Promise<string[]> {
+	if (!params.token) {
+		return [];
+	}
+	const tokenEntry = await getTokenEntry(params.token);
+	if (!tokenEntry) {
 		throw error(404);
 	}
 	if (
@@ -17,21 +37,20 @@ export async function getFilePath(params: { token?: string; path?: string }): Pr
 		// root-level file to the URL. In this case, the actual file was already indicated by the
 		// token and we discard `params.path` (after checking, that it matches the filename
 		// indicated by the token).
-		params.path === `/${rootPath}`
+		params.path === `/${tokenEntry.name}`
 	) {
-		return [rootPath];
+		return [getPathForTokenEntry(tokenEntry)];
 	}
-	return [rootPath, ...params.path.split('/')];
+	return [getPathForTokenEntry(tokenEntry), ...params.path.split('/')];
 }
 
 /**
  * Returns the download HREF for the given file.
  *
  * @param token The root entry's download token.
- * @param filePath The file's complete path as provided by the root `+layout.server.ts`.
  */
-export function getDownloadHref(token: string, filePath: string[]): string {
-	const [rootPath, ...subPath] = filePath;
+export function getDownloadHref(token: string, virtualPath: string[]): string {
+	const [rootPath, ...subPath] = virtualPath;
 	if (subPath.length > 0) {
 		return `/download/${token}/${subPath.join('/')}`;
 	} else {
@@ -45,17 +64,19 @@ export function getDownloadHref(token: string, filePath: string[]): string {
 
 /**
  * Returns a file listing for the root directory or a sub directory.
- *
- * @param filePath The complete file path to the subdirectory including to root directory.
- * @param token The root directory's download token.
  */
-export async function getFileList(filePath: string[], token?: string): Promise<FileListEntry[]> {
-	const list = await listDir(filePath);
+export async function getFileList(params: {
+	token?: string;
+	path?: string;
+}): Promise<FileListEntry[]> {
+	const actualPath = await getActualPath(params);
+	const virtualPath = await getVirtualPath(params);
+	const list = await listDir(actualPath);
 	return list.map((entry) => {
 		let downloadHref: string | undefined;
 		if (entry.type !== 'inode/directory') {
-			const entryToken = token ?? (entry as RootFileEntry).token;
-			downloadHref = getDownloadHref(entryToken, [...filePath, entry.name]);
+			const entryToken = params.token ?? (entry as RootFileEntry).token;
+			downloadHref = getDownloadHref(entryToken, [...virtualPath, entry.name]);
 		}
 		return { ...entry, downloadHref };
 	});

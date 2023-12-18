@@ -1,18 +1,12 @@
 import { building } from '$app/environment';
 import { ROOT_DIR } from '$env/static/private';
+import { error } from '@sveltejs/kit';
 import { fileTypeFromBuffer } from 'file-type';
 import { lstat, mkdir, readFile, readdir, rm, writeFile } from 'fs/promises';
 import mime from 'mime';
 import { join } from 'path';
-import { deleteTokenForPath, getToken } from './tokens';
-
-export interface ErrnoException extends Error {
-	errno?: number;
-	code?: string;
-	path?: string;
-	syscall?: string;
-	stack?: string;
-}
+import { addToken, deleteToken, getPathForTokenEntry, getTokenEntry, listTokens } from './tokens';
+import type { ErrnoException } from './types';
 
 export interface FileEntry {
 	name: string;
@@ -39,12 +33,8 @@ export async function listDir(path: string[]): Promise<FileEntry[]> {
 }
 
 async function listRootDir(): Promise<RootFileEntry[]> {
-	await initialized;
-	const list = await _listFiles(ROOT_DIR);
-	const rootList = await Promise.all(
-		list.map(async (entry) => ({ ...entry, token: await getToken(entry.name) }))
-	);
-	return rootList.sort((a, b) => b.modifiedTime.getTime() - a.modifiedTime.getTime());
+	const list = await listTokens();
+	return list.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
 }
 
 async function listSubDir(path: string[]): Promise<FileEntry[]> {
@@ -103,27 +93,56 @@ async function createRootDirIfNeeded(): Promise<void> {
 /**
  * Creates a new folder.
  *
- * @param path The complete path to the folder to create from ROOT_DIR.
+ * @param name The name of the folder to create.
+ * @param path The path to the parent folder from ROOT_DIR.
  */
-export async function createFolder(path: string): Promise<void> {
-	console.log('Creating directory', path);
-	await mkdir(join(ROOT_DIR, path));
+export async function createFolder(name: string, path: string[]): Promise<void> {
+	console.log('Creating directory', name, path);
+	if (path.length === 0) {
+		const entry = await addToken(name, 'inode/directory');
+		await mkdir(join(ROOT_DIR, getPathForTokenEntry(entry)));
+	} else {
+		await mkdir(join(ROOT_DIR, ...path, name));
+	}
 }
 
-export async function remove(path: string): Promise<void> {
+/**
+ * Removes a root-level token entry.
+ *
+ * Deletes both the entry of the tokens map and the corresponding file(s).
+ */
+export async function removeToken(token: string): Promise<void> {
+	console.log('Deleting token', token);
+	const entry = await getTokenEntry(token);
+	if (!entry) {
+		// TODO: Decide on a consistent error type to propagate from these functions.
+		throw error(404);
+	}
+	await rm(join(ROOT_DIR, getPathForTokenEntry(entry)), { recursive: true });
+	await deleteToken(token);
+}
+
+/**
+ * Removes a file or directory on a sub level under a token entry.
+ */
+export async function removeSubPath(path: string): Promise<void> {
 	console.log('Deleting', path);
 	await rm(join(ROOT_DIR, path), { recursive: true });
-	if (!path.includes('/')) {
-		await deleteTokenForPath(path);
-	}
 }
 
-export async function createFile(path: string, content: Buffer): Promise<void> {
-	if (await exists(path)) {
-		throw { ...new Error('File exists'), code: 'EEXIST' };
+export async function createFile(name: string, path: string[], content: Buffer): Promise<void> {
+	if (path.length === 0) {
+		const entry = await addToken(name, 'application/octet-stream');
+		console.log('Writing file', getPathForTokenEntry(entry));
+		await writeFile(join(ROOT_DIR, getPathForTokenEntry(entry)), content);
+	} else {
+		const filePath = join(ROOT_DIR, ...path, name);
+		if (await exists(filePath)) {
+			throw error(409);
+		}
+		console.log('Writing file', filePath);
+		await writeFile(filePath, content);
 	}
-	console.log('Writing file', path);
-	await writeFile(join(ROOT_DIR, path), content);
 }
 
 async function exists(path: string): Promise<boolean> {

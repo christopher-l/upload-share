@@ -57,6 +57,9 @@
 				}}
 			>
 				<input hidden name="name" value={file.name} />
+				{#if file.token}
+					<input hidden name="token" value={file.token} />
+				{/if}
 				<button class="danger" disabled={deleting}>Delete</button>
 			</form>
 		</footer>

@@ -1,5 +1,6 @@
 import { TOKENS_FILE } from '$env/static/private';
 import { lstat, readFile, writeFile } from 'fs/promises';
+import type { ErrnoException } from './types';
 
 /**
  * Root-level file entries are translated to tokens. Public access to root-level entries is allowed
@@ -9,8 +10,14 @@ import { lstat, readFile, writeFile } from 'fs/promises';
  * automatically generated and saved to the map.
  */
 
+interface TokenEntry {
+	name: string;
+	date: string;
+	type: string;
+}
+
 /** Maps tokens to files and directories in the root directory. */
-type Tokens = { [token: string]: string | undefined };
+type Tokens = { [token: string]: TokenEntry };
 
 /**
  * In-memory representation of the tokens file.
@@ -20,49 +27,51 @@ type Tokens = { [token: string]: string | undefined };
  */
 let cachedTokens: Promise<Tokens> | null = null;
 
-/**
- * Returns the root-level path that corresponds to the given token.
- *
- * Returns `null` if the given token is not mapped.
- */
-export async function getPathForToken(token: string): Promise<string | null> {
+export async function listTokens(): Promise<({ token: string } & TokenEntry)[]> {
+	const tokens = await getTokens();
+	return Object.entries(tokens).map(([token, entry]) => ({ token, ...entry }));
+}
+
+export async function getTokenEntry(token: string): Promise<TokenEntry | null> {
 	const tokens = await getTokens();
 	return tokens[token] ?? null;
 }
 
 /**
- * Returns the token that corresponds to the given root-level path.
- *
- * If the given path has no token yet, generates a token and saves it to the map.
+ * Returns the root-level path that corresponds to the given token.
  */
-export async function getToken(path: string): Promise<string> {
+export function getPathForTokenEntry(entry: TokenEntry): string {
+	return `${entry.date} ${entry.name}`;
+}
+
+export async function addToken(name: string, type: string): Promise<TokenEntry> {
+	const entry = { name, type, date: new Date().toISOString() };
 	const tokens = await getTokens();
-	let token = Object.entries(tokens).find(([, p]) => path === p)?.[0];
-	if (!token) {
-		token = generateToken();
-		tokens[token] = path;
-		void writeTokensFile();
-	}
-	return token;
+	tokens[generateToken()] = entry;
+	void writeTokensFile();
+	return entry;
 }
 
 /**
- * Deletes the token that corresponds to the given root-level path if it exists.
+ * Deletes the token if it exists.
+ *
+ * @returns the deleted token entry or null if the no entry for the given token existed
  */
-export async function deleteTokenForPath(path: string): Promise<void> {
+export async function deleteToken(token: string): Promise<TokenEntry | null> {
 	const tokens = await getTokens();
-	const token = Object.entries(tokens).find(([, p]) => path === p)?.[0];
-	if (token) {
+	const entry = tokens[token];
+	if (entry) {
 		delete tokens[token];
 		void writeTokensFile();
 	}
+	return entry ?? null;
 }
 
 /**
  * Generates a new token suitable as URL path component.
  */
 function generateToken(): string {
-	const length = 20;
+	const length = 10;
 	const bytes = new Uint8Array(length);
 	crypto.getRandomValues(bytes);
 	const base64 = btoa(String.fromCharCode(...bytes));
@@ -91,7 +100,7 @@ async function readTokensFile(): Promise<Tokens> {
 	try {
 		await lstat(TOKENS_FILE);
 	} catch (e) {
-		if (e.code === 'ENOENT') {
+		if ((e as ErrnoException).code === 'ENOENT') {
 			return {};
 		}
 		throw e;

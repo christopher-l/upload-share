@@ -1,5 +1,7 @@
 <script lang="ts">
-	export let navLinks: { next: string | null; previous: string | null } | null;
+	import type { NavLinks } from './types';
+
+	export let navLinks: NavLinks | null;
 	export let currentItemName: string;
 </script>
 
@@ -9,11 +11,16 @@
 			<iconify-icon icon="mingcute:left-fill" />
 		</a>
 	{:else}
-		<button class="secondary {navLinks ? '' : 'hidden'}" disabled >
+		<button class="secondary {navLinks ? '' : 'hidden'}" disabled>
 			<iconify-icon icon="mingcute:left-fill" />
 		</button>
 	{/if}
-	<div class="center">{currentItemName}</div>
+	<div class="center">
+		{currentItemName}
+		{#if navLinks}
+			({navLinks.index + 1} / {navLinks.total})
+		{/if}
+	</div>
 	{#if navLinks?.next}
 		<a href={navLinks.next} class="secondary">
 			<iconify-icon icon="mingcute:right-fill" />

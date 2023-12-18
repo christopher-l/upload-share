@@ -39,7 +39,7 @@
 </script>
 
 <ul class="file-list">
-	{#each fileList as file (file.name)}
+	{#each fileList as file (file.token ?? file.name)}
 		<li>
 			{#if file.progress != null}
 				<progress value={file.progress ?? 0.5} class:error={file.error} />

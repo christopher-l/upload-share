@@ -1,7 +1,7 @@
 import { hasValidUploadToken } from '$lib/server/authentication';
-import { getEntryType } from '$lib/server/filesystem';
-import { getFileList, getFilePath } from '$lib/server/utils';
-import type { FileListEntry } from '$lib/types';
+import { getEntryType, listDir } from '$lib/server/filesystem';
+import { getActualPath, getVirtualPath } from '$lib/server/utils';
+import type { FileListEntry, NavLinks } from '$lib/types';
 import { error } from '@sveltejs/kit';
 import type { LayoutParams, LayoutServerLoad } from './$types';
 
@@ -11,46 +11,51 @@ export const load: LayoutServerLoad<{
 	/**
 	 * The path of the directory or file referenced by the URL path relative to the root directory.
 	 */
-	filePath: string[];
+	virtalPath: string[];
 	/** The entry type of the item referenced by the URL path. */
 	entryType: 'file' | 'directory';
 	/** Links for adjacent-page navigation. */
-	navLinks: { next: string | null; previous: string | null } | null;
+	navLinks: NavLinks | null;
 }> = async ({ params, request, cookies }) => {
 	const hasUploadToken = hasValidUploadToken(request, cookies);
 	if (!hasUploadToken && !params.token) {
 		throw error(401);
 	}
-	const filePath = await getFilePath(params);
-	const entryType = await getEntryType(filePath);
+	const virtalPath = await getVirtualPath(params);
+	const actualPath = await getActualPath(params);
+	const entryType = await getEntryType(actualPath);
 	if (!entryType) {
 		throw error(404);
 	}
 	return {
 		hasUploadToken,
-		filePath,
+		virtalPath,
 		entryType,
-		navLinks: await getNavLinks({ params, filePath })
+		navLinks: entryType === 'file' ? await getNavLinks({ params, actualPath }) : null
 	};
 };
 
 async function getNavLinks({
 	params,
-	filePath
+	actualPath
 }: {
 	params: LayoutParams;
-	filePath: string[];
-}): Promise<{ next: string | null; previous: string | null } | null> {
-	if (filePath.length < 2) {
+	actualPath: string[];
+}): Promise<NavLinks | null> {
+	if (actualPath.length < 2) {
 		return null;
 	}
-	const parentPath = filePath.slice(0, -1);
-	const parentFiles = await getFileList(parentPath, params.token);
-	const [itemName] = filePath.slice(-1);
+	const parentPath = actualPath.slice(0, -1);
+	const parentFiles = (await listDir(parentPath)).filter(
+		(entry) => entry.type !== 'inode/directory'
+	);
+	const [itemName] = actualPath.slice(-1);
 	const itemIndex = parentFiles.findIndex((file) => file.name === itemName);
 	return {
 		previous: getItemLink(parentFiles[itemIndex - 1], params, parentPath),
-		next: getItemLink(parentFiles[itemIndex + 1], params, parentPath)
+		next: getItemLink(parentFiles[itemIndex + 1], params, parentPath),
+		index: itemIndex,
+		total: parentFiles.length
 	};
 }
 
