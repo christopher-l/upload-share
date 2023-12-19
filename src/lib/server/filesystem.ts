@@ -35,9 +35,14 @@ export async function listDir(path: string[]): Promise<FileEntry[]> {
 
 async function listRootDir(): Promise<RootFileEntry[]> {
 	const list = await listTokens();
-	return list
-		.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
-		.map((entry) => ({ ...entry, type: mime.getType(entry.name) }));
+	const sortedList = list.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+	const stats = await Promise.all(
+		sortedList.map((entry) => lstat(join(ROOT_DIR, getPathForTokenEntry(entry))))
+	);
+	return sortedList.map((entry, index) => {
+		const isDirectory = stats[index].isDirectory();
+		return { ...entry, type: isDirectory ? 'inode/directory' : mime.getType(entry.name) };
+	});
 }
 
 async function listSubDir(path: string[]): Promise<FileEntry[]> {
