@@ -36,13 +36,20 @@
 {/if}
 
 <style lang="scss">
+	img {
+		min-height: 0;
+		object-fit: scale-down;
+	}
+	audio {
+		width: 100%;
+	}
+	video {
+		min-height: 0;
+	}
 	pre {
 		padding: var(--spacing);
 	}
 	object {
 		flex-grow: 1;
-	}
-	audio {
-		width: 100%;
 	}
 </style>
