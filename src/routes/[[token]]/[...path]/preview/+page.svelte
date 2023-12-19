@@ -9,7 +9,7 @@
 	$: filename = data.virtalPath[data.virtalPath.length - 1];
 
 	let text: string;
-	$: if (browser && data.mimetype?.startsWith('text/')) {
+	$: if ((browser && data.mimetype?.startsWith('text/')) || data.mimetype == null) {
 		fetch(data.downloadHref!)
 			.then((response) => response.text())
 			.then((t) => (text = t));
@@ -27,7 +27,7 @@
 {:else if data.mimetype?.startsWith('video/')}
 	<!-- svelte-ignore a11y-media-has-caption -->
 	<video src={data.downloadHref} controls />
-{:else if data.mimetype?.startsWith('text/')}
+{:else if data.mimetype?.startsWith('text/') || data.mimetype == null}
 	{#if text}
 		<pre>{text}</pre>
 	{/if}
