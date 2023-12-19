@@ -1,6 +1,6 @@
 import { error } from '@sveltejs/kit';
 import type { FileListEntry } from '../types';
-import { listDir, type RootFileEntry } from './filesystem';
+import { canGetZipArchive, listDir, type RootFileEntry } from './filesystem';
 import { getPathForTokenEntry, getTokenEntry } from './tokens';
 
 /**
@@ -49,14 +49,18 @@ export async function getActualPath(params: { token?: string; path?: string }): 
  *
  * @param token The root entry's download token.
  */
-export function getDownloadHref(
+export async function getDownloadHref(
 	token: string,
+	actualPath: string[],
 	virtualPath: string[],
 	isDirectory: boolean
-): string {
+): Promise<string | undefined> {
 	const [rootPath, ...subPath] = virtualPath;
 	const suffix = isDirectory ? '.zip' : '';
 	const path = isDirectory ? 'archive' : 'download';
+	if (isDirectory && !(await canGetZipArchive(actualPath))) {
+		return undefined;
+	}
 	if (subPath.length > 0) {
 		return `/${path}/${token}/${subPath.join('/')}${suffix}`;
 	} else {
@@ -78,14 +82,22 @@ export async function getFileList(params: {
 	const actualPath = await getActualPath(params);
 	const virtualPath = await getVirtualPath(params);
 	const list = await listDir(actualPath);
-	return list.map((entry) => {
-		let downloadHref: string | undefined;
-		const entryToken = params.token ?? (entry as RootFileEntry).token;
-		downloadHref = getDownloadHref(
-			entryToken,
-			[...virtualPath, entry.name],
-			entry.type === 'inode/directory'
-		);
-		return { ...entry, downloadHref };
-	});
+	return Promise.all(
+		list.map(async (entry) => {
+			const entryToken = params.token ?? (entry as RootFileEntry).token;
+			let downloadHref: string | undefined;
+			// Don't get download links for the root directory since checking
+			// canGetZipArchive is a special case here and the root-dir listing
+			// is only available to the admin anyway.
+			if (actualPath.length > 0) {
+				downloadHref = await getDownloadHref(
+					entryToken,
+					[...actualPath, entry.name],
+					[...virtualPath, entry.name],
+					entry.type === 'inode/directory'
+				);
+			}
+			return { ...entry, downloadHref };
+		})
+	);
 }

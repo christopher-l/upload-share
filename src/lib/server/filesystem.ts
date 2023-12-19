@@ -1,13 +1,18 @@
 import { building } from '$app/environment';
+import { env } from '$env/dynamic/private';
 import { DATA_DIR } from '$env/static/private';
 import { error } from '@sveltejs/kit';
 import AdmZip from 'adm-zip';
+import { exec } from 'child_process';
 import { fileTypeFromBuffer } from 'file-type';
 import { lstat, mkdir, readFile, readdir, rm, writeFile } from 'fs/promises';
 import mime from 'mime';
 import { join } from 'path';
+import { promisify } from 'util';
 import { addToken, deleteToken, getPathForTokenEntry, getTokenEntry, listTokens } from './tokens';
 import type { ErrnoException } from './types';
+
+const execPromise = promisify(exec);
 
 export interface FileEntry {
 	name: string;
@@ -153,7 +158,16 @@ export async function createFile(name: string, path: string[], content: Buffer):
 	}
 }
 
+/** Return whether you can call getZipArchive on path. */
+export async function canGetZipArchive(path: string[]): Promise<boolean> {
+	const folderSize = await getFolderSize(path);
+	return folderSize <= getMaxArchiveSize();
+}
+
 export async function getZipArchive(path: string[]): Promise<Buffer> {
+	if (!(await canGetZipArchive(path))) {
+		throw error(500, 'MAX_ARCHIVE_SIZE exceeded');
+	}
 	const zip = new AdmZip();
 	await zip.addLocalFolderPromise(join(DATA_DIR, ...path), {});
 	const buffer = await zip.toBufferPromise();
@@ -170,4 +184,35 @@ async function exists(path: string): Promise<boolean> {
 		}
 	}
 	return false;
+}
+
+/** Returns the total folder size in byte. */
+async function getFolderSize(path: string[]): Promise<number> {
+	const { stdout, stderr } = await execPromise('du . -sb | cut -f 1', {
+		cwd: join(DATA_DIR, ...path)
+	});
+	const size = Number.parseInt(stdout);
+	return size;
+}
+
+/** Returns the value of MAX_ARCHIVE_SIZE in byte. */
+function getMaxArchiveSize(): number {
+	if (!env.MAX_ARCHIVE_SIZE) {
+		return 0;
+	}
+	const match = /(\d+)([KMG])?/.exec(env.MAX_ARCHIVE_SIZE);
+	if (!match) {
+		return 0;
+	}
+	const value = parseInt(match[1]);
+	switch (match[2]) {
+		case 'K':
+			return value * 1024;
+		case 'M':
+			return value * 1024 * 1024;
+		case 'G':
+			return value * 1024 * 1024 * 1024;
+		default:
+			return value;
+	}
 }

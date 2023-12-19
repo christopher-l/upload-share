@@ -33,7 +33,10 @@ export const load: LayoutServerLoad<{
 		virtalPath,
 		entryType,
 		navLinks: entryType === 'file' ? await getNavLinks({ params, actualPath }) : null,
-		downloadHref: params.token ? getDownloadHref(params.token, virtalPath, entryType === 'directory') : null
+		downloadHref:
+			(params.token &&
+				(await getDownloadHref(params.token, actualPath, virtalPath, entryType === 'directory'))) ??
+			null
 	};
 };
 
