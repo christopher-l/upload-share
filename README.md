@@ -43,6 +43,8 @@ docker save -o upload-share.tar upload-share
 docker load -i upload-share.tar
 ```
 
+See `scripts/deploy.sh` for a complete example of building and deploying via Docker / Podman.
+
 ## Deploying With Docker Compose
 
 The application can be deployed using the provided `docker-compose.yml`. Configuration has to be provided with an `.env` file in the same directory.
