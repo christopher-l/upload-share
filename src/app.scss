@@ -6,13 +6,16 @@ body {
 }
 
 div,
-span,
 body,
 main,
 nav,
 header,
 footer {
 	display: flex;
+}
+
+span {
+	display: inline-flex;
 }
 
 div,

@@ -16,9 +16,9 @@
 		</button>
 	{/if}
 	<div class="center">
-		{currentItemName}
+		<span class="title">{currentItemName}</span>
 		{#if navLinks}
-			({navLinks.index + 1} / {navLinks.total})
+		<span>({navLinks.index + 1} / {navLinks.total})</span>
 		{/if}
 	</div>
 	{#if navLinks?.next}
@@ -41,9 +41,13 @@
 		overflow: hidden;
 	}
 	.center {
+		display: block;
 		align-self: center;
 		flex-grow: 1;
 		text-align: center;
+		padding: calc(var(--spacing) / 2);
+	}
+	.title {
 		overflow-wrap: anywhere;
 	}
 	a,
