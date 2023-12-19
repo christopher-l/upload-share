@@ -1,6 +1,8 @@
-import { TOKENS_FILE } from '$env/static/private';
+import { DATA_DIR } from '$env/static/private';
 import { lstat, readFile, writeFile } from 'fs/promises';
 import type { ErrnoException } from './types';
+
+const TOKENS_FILE = `${DATA_DIR}/tokens.json`;
 
 /**
  * Root-level file entries are translated to tokens. Public access to root-level entries is allowed

@@ -1,5 +1,5 @@
 import { building } from '$app/environment';
-import { ROOT_DIR } from '$env/static/private';
+import { DATA_DIR } from '$env/static/private';
 import { error } from '@sveltejs/kit';
 import AdmZip from 'adm-zip';
 import { fileTypeFromBuffer } from 'file-type';
@@ -37,7 +37,7 @@ async function listRootDir(): Promise<RootFileEntry[]> {
 	const list = await listTokens();
 	const sortedList = list.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
 	const stats = await Promise.all(
-		sortedList.map((entry) => lstat(join(ROOT_DIR, getPathForTokenEntry(entry))))
+		sortedList.map((entry) => lstat(join(DATA_DIR, getPathForTokenEntry(entry))))
 	);
 	return sortedList.map((entry, index) => {
 		const isDirectory = stats[index].isDirectory();
@@ -46,7 +46,7 @@ async function listRootDir(): Promise<RootFileEntry[]> {
 }
 
 async function listSubDir(path: string[]): Promise<FileEntry[]> {
-	return await _listFiles(join(ROOT_DIR, ...path));
+	return await _listFiles(join(DATA_DIR, ...path));
 }
 
 async function _listFiles(path: string): Promise<(FileEntry & { modifiedTime: Date })[]> {
@@ -65,7 +65,7 @@ async function _listFiles(path: string): Promise<(FileEntry & { modifiedTime: Da
 
 export async function getEntryType(path: string[]): Promise<'file' | 'directory' | null> {
 	try {
-		const stats = await lstat(join(ROOT_DIR, ...path));
+		const stats = await lstat(join(DATA_DIR, ...path));
 		if (stats.isDirectory()) {
 			return 'directory';
 		} else {
@@ -80,7 +80,7 @@ export async function getContent(
 	path: string[]
 ): Promise<{ content: Buffer; mimetype: string } | null> {
 	try {
-		const content = await readFile(join(ROOT_DIR, ...path));
+		const content = await readFile(join(DATA_DIR, ...path));
 		const mimetype = (await fileTypeFromBuffer(content))?.mime ?? 'application/octet-stream';
 		return { content, mimetype };
 	} catch (e) {
@@ -89,12 +89,12 @@ export async function getContent(
 }
 
 async function createRootDirIfNeeded(): Promise<void> {
-	if (!ROOT_DIR) {
+	if (!DATA_DIR) {
 		return;
 	}
 	if (!(await exists(''))) {
-		console.log('Creating root directory', ROOT_DIR);
-		await mkdir(ROOT_DIR);
+		console.log('Creating root directory', DATA_DIR);
+		await mkdir(DATA_DIR);
 	}
 }
 
@@ -102,15 +102,15 @@ async function createRootDirIfNeeded(): Promise<void> {
  * Creates a new folder.
  *
  * @param name The name of the folder to create.
- * @param path The path to the parent folder from ROOT_DIR.
+ * @param path The path to the parent folder from DATA_DIR.
  */
 export async function createFolder(name: string, path: string[]): Promise<void> {
 	console.log('Creating directory', name, path);
 	if (path.length === 0) {
 		const entry = await addToken(name);
-		await mkdir(join(ROOT_DIR, getPathForTokenEntry(entry)));
+		await mkdir(join(DATA_DIR, getPathForTokenEntry(entry)));
 	} else {
-		await mkdir(join(ROOT_DIR, ...path, name));
+		await mkdir(join(DATA_DIR, ...path, name));
 	}
 }
 
@@ -126,7 +126,7 @@ export async function removeToken(token: string): Promise<void> {
 		// TODO: Decide on a consistent error type to propagate from these functions.
 		throw error(404);
 	}
-	await rm(join(ROOT_DIR, getPathForTokenEntry(entry)), { recursive: true });
+	await rm(join(DATA_DIR, getPathForTokenEntry(entry)), { recursive: true });
 	await deleteToken(token);
 }
 
@@ -135,16 +135,16 @@ export async function removeToken(token: string): Promise<void> {
  */
 export async function removeSubPath(path: string): Promise<void> {
 	console.log('Deleting', path);
-	await rm(join(ROOT_DIR, path), { recursive: true });
+	await rm(join(DATA_DIR, path), { recursive: true });
 }
 
 export async function createFile(name: string, path: string[], content: Buffer): Promise<void> {
 	if (path.length === 0) {
 		const entry = await addToken(name);
 		console.log('Writing file', getPathForTokenEntry(entry));
-		await writeFile(join(ROOT_DIR, getPathForTokenEntry(entry)), content);
+		await writeFile(join(DATA_DIR, getPathForTokenEntry(entry)), content);
 	} else {
-		const filePath = join(ROOT_DIR, ...path, name);
+		const filePath = join(DATA_DIR, ...path, name);
 		if (await exists(filePath)) {
 			throw error(409);
 		}
@@ -155,14 +155,14 @@ export async function createFile(name: string, path: string[], content: Buffer):
 
 export async function getZipArchive(path: string[]): Promise<Buffer> {
 	const zip = new AdmZip();
-	await zip.addLocalFolderPromise(join(ROOT_DIR, ...path), {});
+	await zip.addLocalFolderPromise(join(DATA_DIR, ...path), {});
 	const buffer = await zip.toBufferPromise();
 	return buffer;
 }
 
 async function exists(path: string): Promise<boolean> {
 	try {
-		await lstat(join(ROOT_DIR, path));
+		await lstat(join(DATA_DIR, path));
 		return true;
 	} catch (e) {
 		if ((e as ErrnoException).code !== 'ENOENT') {
