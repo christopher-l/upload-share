@@ -35,6 +35,7 @@
 		padding: calc(var(--spacing) / 2);
 	}
 	.center {
+		min-width: 0;
 		padding: calc(var(--spacing) / 2) var(--spacing);
 	}
 	a:not([href]) {
