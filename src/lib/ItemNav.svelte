@@ -6,30 +6,18 @@
 </script>
 
 <nav>
-	{#if navLinks?.previous}
-		<a href={navLinks.previous} class="secondary">
-			<iconify-icon icon="mingcute:left-fill" />
-		</a>
-	{:else}
-		<button class="secondary {navLinks ? '' : 'hidden'}" disabled>
-			<iconify-icon icon="mingcute:left-fill" />
-		</button>
-	{/if}
+	<a href={navLinks?.previous} class="secondary {navLinks ? '' : 'hidden'}" role="button">
+		<iconify-icon icon="mingcute:left-fill" />
+	</a>
 	<div class="center">
 		<span class="title">{currentItemName}</span>
 		{#if navLinks}
-		<span>({navLinks.index + 1} / {navLinks.total})</span>
+			<span>({navLinks.index + 1} / {navLinks.total})</span>
 		{/if}
 	</div>
-	{#if navLinks?.next}
-		<a href={navLinks.next} class="secondary">
-			<iconify-icon icon="mingcute:right-fill" />
-		</a>
-	{:else}
-		<button class="secondary {navLinks ? '' : 'hidden'}" disabled>
-			<iconify-icon icon="mingcute:right-fill" />
-		</button>
-	{/if}
+	<a href={navLinks?.next} class="secondary {navLinks ? '' : 'hidden'}" role="button">
+		<iconify-icon icon="mingcute:right-fill" />
+	</a>
 </nav>
 
 <style lang="scss">
@@ -50,19 +38,14 @@
 	.title {
 		overflow-wrap: anywhere;
 	}
-	a,
-	button {
+	a {
 		display: flex;
 		align-items: center;
-		width: unset;
-		margin: 0;
 		padding: var(--form-element-spacing-vertical) var(--form-element-spacing-horizontal);
-		color: var(--secondary-inverse);
-		background-color: var(--secondary);
 		border-radius: 0;
 	}
 	// Keep taking up vertical space
-	.hidden {
+	a.hidden {
 		opacity: 0;
 		overflow: hidden;
 		width: 0;
