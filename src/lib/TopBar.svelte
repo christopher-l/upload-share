@@ -3,19 +3,23 @@
 </script>
 
 <header>
-	<div class="left">
-		<a class="icon standard" href={$backTarget}>
-			<iconify-icon icon="mdi:arrow-left" width="36" height="36" />
-		</a>
-	</div>
+	{#if $backTarget || $downloadTarget}
+		<div class="left">
+			<a class="icon standard" href={$backTarget}>
+				<iconify-icon icon="mdi:arrow-left" width="36" height="36" />
+			</a>
+		</div>
+	{/if}
 	<div class="center container">
 		<slot />
 	</div>
-	<div class="right">
-		<a class="icon standard" href={$downloadTarget} download>
-			<iconify-icon icon="mdi:download" width="36" height="36" />
-		</a>
-	</div>
+	{#if $backTarget || $downloadTarget}
+		<div class="right">
+			<a class="icon standard" href={$downloadTarget} download>
+				<iconify-icon icon="mdi:download" width="36" height="36" />
+			</a>
+		</div>
+	{/if}
 </header>
 
 <style lang="scss">
