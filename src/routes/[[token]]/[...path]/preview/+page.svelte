@@ -16,26 +16,33 @@
 	}
 </script>
 
-{#if data.hasUploadToken && !$page.url.searchParams.has('select-destination')}
-	<ShareUrl url={$page.url.toString().replace(/\/preview$/, '')} />
-{/if}
-
-{#if data.mimetype?.startsWith('image/')}
-	<img src={data.downloadHref} alt={filename} />
-{:else if data.mimetype?.startsWith('audio/')}
-	<audio src={data.downloadHref} controls />
-{:else if data.mimetype?.startsWith('video/')}
-	<!-- svelte-ignore a11y-media-has-caption -->
-	<video src={data.downloadHref} controls />
-{:else if data.mimetype?.startsWith('text/') || data.mimetype == null}
-	{#if text}
-		<pre>{text}</pre>
+<main class="container">
+	{#if data.hasUploadToken && !$page.url.searchParams.has('select-destination')}
+		<ShareUrl url={$page.url.toString().replace(/\/preview$/, '')} />
 	{/if}
-{:else if data.mimetype === 'application/pdf'}
-	<object title={filename} data={data.downloadHref} type="application/pdf" />
-{/if}
+
+	{#if data.mimetype?.startsWith('image/')}
+		<img src={data.downloadHref} alt={filename} />
+	{:else if data.mimetype?.startsWith('audio/')}
+		<audio src={data.downloadHref} controls />
+	{:else if data.mimetype?.startsWith('video/')}
+		<!-- svelte-ignore a11y-media-has-caption -->
+		<video src={data.downloadHref} controls />
+	{:else if data.mimetype?.startsWith('text/') || data.mimetype == null}
+		{#if text}
+			<pre>{text}</pre>
+		{/if}
+	{:else if data.mimetype === 'application/pdf'}
+		<!-- We set height to a very large value, so the element will take up all available space -->
+		<object title={filename} data={data.downloadHref} type="application/pdf" height="1000000" />
+	{/if}
+</main>
 
 <style lang="scss">
+	main {
+		padding: var(--block-spacing-vertical) var(--block-spacing-horizontal);
+		min-height: 0;
+	}
 	img {
 		min-height: 0;
 		object-fit: scale-down;
@@ -48,8 +55,6 @@
 	}
 	pre {
 		padding: var(--spacing);
-	}
-	object {
-		flex-grow: 1;
+		margin: 0;
 	}
 </style>

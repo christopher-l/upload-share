@@ -33,14 +33,6 @@
 	<ItemNav navLinks={data.navLinks} currentItemName={title} />
 </TopBar>
 
-<main class="container">
-	<slot />
-</main>
+<slot />
 
-<style lang="scss">
-	main {
-		min-height: 0;
-		flex-grow: 1;
-		padding: var(--block-spacing-vertical) var(--block-spacing-horizontal);
-	}
-</style>
+

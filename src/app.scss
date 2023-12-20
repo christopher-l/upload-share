@@ -1,8 +1,9 @@
-html {
-	height: 100%;
-}
+
 body {
-	height: 100%;
+	// Allow content to grow to full viewport height including space for the
+	// browser UI that scrolls away on mobile devices. Growing further is
+	// possible by overflowing body.
+	max-height: 100vh;
 }
 
 div,

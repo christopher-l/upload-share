@@ -20,16 +20,24 @@
 	});
 </script>
 
-{#if data.hasUploadToken && $selectDestination}
-	<UploadHereButton />
-{:else if data.hasUploadToken && data.virtalPath.length > 0}
-	<ShareUrl url={$page.url.toString()} />
-{/if}
+<main class="container">
+	{#if data.hasUploadToken && $selectDestination}
+		<UploadHereButton />
+	{:else if data.hasUploadToken && data.virtalPath.length > 0}
+		<ShareUrl url={$page.url.toString()} />
+	{/if}
 
-<Breadcrumbs filePath={data.virtalPath} />
+	<Breadcrumbs filePath={data.virtalPath} />
 
-{#if data.hasUploadToken}
-	<NewButton />
-{/if}
+	{#if data.hasUploadToken}
+		<NewButton />
+	{/if}
 
-<FileList fileList={data.fileList} showFileMenu={data.hasUploadToken} />
+	<FileList fileList={data.fileList} showFileMenu={data.hasUploadToken} />
+</main>
+
+<style lang="scss">
+	main {
+		padding: var(--block-spacing-vertical) var(--block-spacing-horizontal);
+	}
+</style>

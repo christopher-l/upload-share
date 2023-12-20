@@ -24,6 +24,10 @@
 
 <style lang="scss">
 	header {
+		// Keep height when there are no buttons.
+		box-sizing: content-box;
+		min-height: calc(var(--spacing) * 2 + 36px);
+		flex-shrink: 0;
 		background-color: var(--dropdown-background-color);
 		border-bottom: 1px solid var(--secondary);
 		justify-content: space-between;

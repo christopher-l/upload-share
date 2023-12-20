@@ -71,6 +71,7 @@
 <style lang="scss">
 	ul.file-list {
 		padding: 0;
+		margin: 0;
 		li {
 			position: relative;
 			list-style: none;
