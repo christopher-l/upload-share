@@ -108,14 +108,17 @@ async function createRootDirIfNeeded(): Promise<void> {
  *
  * @param name The name of the folder to create.
  * @param path The path to the parent folder from DATA_DIR.
+ * @returns The generated token if the folder was created at root level.
  */
-export async function createFolder(name: string, path: string[]): Promise<void> {
+export async function createFolder(name: string, path: string[]): Promise<string | null> {
 	console.log('Creating directory', name, path);
 	if (path.length === 0) {
 		const entry = await addToken(name);
 		await mkdir(join(DATA_DIR, getPathForTokenEntry(entry)));
+		return entry.token;
 	} else {
 		await mkdir(join(DATA_DIR, ...path, name));
+		return null;
 	}
 }
 

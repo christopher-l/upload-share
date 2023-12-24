@@ -45,12 +45,13 @@ export function getPathForTokenEntry(entry: TokenEntry): string {
 	return `${entry.date} ${entry.name}`;
 }
 
-export async function addToken(name: string): Promise<TokenEntry> {
+export async function addToken(name: string): Promise<TokenEntry & { token: string }> {
 	const entry = { name, date: new Date().toISOString() };
 	const tokens = await getTokens();
-	tokens[generateToken()] = entry;
+	const token = generateToken();
+	tokens[token] = entry;
 	void writeTokensFile();
-	return entry;
+	return { token, ...entry };
 }
 
 /**

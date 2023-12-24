@@ -36,7 +36,8 @@ export const actions = {
 		}
 		const path = await getActualPath(params);
 		try {
-			await createFolder(name, path);
+			const token = await createFolder(name, path);
+			throw redirect(303, token ?? `/${getUrlPath(params)}/${name}`);
 		} catch (e) {
 			if ((e as ErrnoException).code === 'EEXIST') {
 				throw error(409);
