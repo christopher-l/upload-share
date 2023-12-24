@@ -2,6 +2,7 @@
 	import { enhance } from '$app/forms';
 	import { navigating } from '$app/stores';
 	import FileList from './FileList.svelte';
+	import { selectDestination } from './stores';
 	import { uploadFiles as doUploadFiles, uploadingFiles } from './uploadFiles';
 
 	let menu: HTMLDetailsElement;
@@ -14,6 +15,20 @@
 	let fileInput: HTMLInputElement;
 	/** Whether the user is currently dragging a file above the page. */
 	let dragging = false;
+
+	/**
+	 * The button's initial form.
+	 *
+	 * - menu: Opens a dropdown menu to choose between uploading files and
+	 *   creating a new folder.
+	 * - folder: Creates a new folder.
+	 */
+	let mode: 'menu' | 'folder';
+	$: if ($selectDestination) {
+		mode = 'folder';
+	} else {
+		mode = 'menu';
+	}
 
 	$: nameIsValid = !newFolderName.includes('/');
 
@@ -89,7 +104,7 @@
 	</form>
 {:else if $uploadingFiles}
 	<FileList fileList={$uploadingFiles} />
-{:else}
+{:else if mode === 'menu'}
 	<details role="list" bind:this={menu}>
 		<summary class="outline" class:dragging aria-haspopup="listbox" aria-busy={awaitingResponse}>
 			+
@@ -137,6 +152,11 @@
 			</li>
 		</ul>
 	</details>
+{:else if mode === 'folder'}
+	<button class="new-folder-button secondary outline" on:click={newFolder}>
+		<iconify-icon icon="mdi:folder" width="36" height="36" />
+		New folder
+	</button>
 {/if}
 
 <style lang="scss">
@@ -174,5 +194,14 @@
 		gap: var(--spacing);
 		align-items: center;
 		cursor: pointer;
+	}
+	.new-folder-button {
+		display: flex;
+		gap: var(--spacing);
+		align-items: center;
+		iconify-icon {
+			height: 0;
+			margin-top: -36px;
+		}
 	}
 </style>
