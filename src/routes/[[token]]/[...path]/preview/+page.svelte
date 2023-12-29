@@ -35,11 +35,17 @@
 	{:else if data.mimetype === 'application/pdf'}
 		<!-- We set height to a very large value, so the element will take up all available space -->
 		<object title={filename} data={data.downloadHref} type="application/pdf" height="1000000" />
+	{:else}
+		<div class="fallback">
+			<span>{filename}</span>
+			<a href={data.downloadHref} role="button" download>Download</a>
+		</div>
 	{/if}
 </main>
 
 <style lang="scss">
 	main {
+		flex-grow: 1;
 		padding: var(--block-spacing-vertical) var(--block-spacing-horizontal);
 		min-height: 0;
 	}
@@ -56,5 +62,11 @@
 	pre {
 		padding: var(--spacing);
 		margin: 0;
+	}
+	.fallback {
+		flex-grow: 1;
+		justify-content: center;
+		align-items: center;
+		gap: var(--spacing);
 	}
 </style>
