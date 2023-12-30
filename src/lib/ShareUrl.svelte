@@ -21,6 +21,7 @@
 		}
 	}
 	input {
+		flex-shrink: 0;
 		background-image: var(--icon-clipboard);
 		padding-right: calc(var(--form-element-spacing-horizontal) + 1.5rem) !important;
 		background-position: center right 0.75rem;
