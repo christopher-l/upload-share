@@ -21,7 +21,8 @@
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		background-color: var(--form-element-valid-border-color);
-		border-color: var(--form-element-valid-active-border-color);
+		margin-bottom: var(--pico-spacing);
+		background-color: var(--pico-form-element-valid-border-color);
+		border-color: var(--pico-form-element-valid-active-border-color);
 	}
 </style>

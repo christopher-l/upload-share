@@ -195,6 +195,7 @@
 	}
 	.new-folder-button {
 		display: flex;
+		margin-bottom: var(--pico-spacing);
 		gap: var(--pico-spacing);
 		align-items: center;
 		iconify-icon {
