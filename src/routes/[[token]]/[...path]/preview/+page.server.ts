@@ -9,8 +9,8 @@ export const load: PageServerLoad<{
 		throw error(404);
 	}
 	const data = await parent();
-	const virtalPath = data.virtalPath;
-	const currentItemName = virtalPath[virtalPath.length - 1];
+	const virtualPath = data.virtualPath;
+	const currentItemName = virtualPath[virtualPath.length - 1];
 	const mimetype = mime.getType(currentItemName);
 
 	return { mimetype };

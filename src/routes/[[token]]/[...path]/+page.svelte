@@ -23,11 +23,11 @@
 <main class="container">
 	{#if data.hasUploadToken && $selectDestination}
 		<UploadHereButton />
-	{:else if data.hasUploadToken && data.virtalPath.length > 0}
+	{:else if data.hasUploadToken && data.virtualPath.length > 0}
 		<ShareUrl url={$page.url.toString()} />
 	{/if}
 
-	<Breadcrumbs filePath={data.virtalPath} />
+	<Breadcrumbs filePath={data.virtualPath} />
 
 	{#if data.hasUploadToken}
 		<NewButton />

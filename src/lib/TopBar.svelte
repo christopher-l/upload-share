@@ -1,9 +1,28 @@
 <script lang="ts">
-	import { backTarget, downloadTarget } from '$lib/stores';
+	import { backTarget, downloadTarget, createArchiveTarget } from '$lib/stores';
+	export let currentItemName: string;
+
+	let waitingForArchive = false;
+
+	async function onCreateArchive() {
+		console.log('onCreateArchive', $createArchiveTarget);
+		if (!$createArchiveTarget) return;
+		waitingForArchive = true;
+		try {
+			const response = await fetch($createArchiveTarget, { method: 'PUT' });
+			const archiveDownloadLink = await response.text();
+			const linkElement = document.createElement('a');
+			linkElement.setAttribute('href', archiveDownloadLink);
+			linkElement.setAttribute('download', currentItemName + '.zip');
+			linkElement.click();
+		} finally {
+			waitingForArchive = false;
+		}
+	}
 </script>
 
 <header>
-	{#if $backTarget || $downloadTarget}
+	{#if $backTarget || $downloadTarget || $createArchiveTarget}
 		<div class="left">
 			<a class="icon standard" href={$backTarget}>
 				<iconify-icon icon="mdi:arrow-left" width="36" height="36" />
@@ -13,11 +32,17 @@
 	<div class="center container">
 		<slot />
 	</div>
-	{#if $backTarget || $downloadTarget}
+	{#if $backTarget || $downloadTarget || $createArchiveTarget}
 		<div class="right">
-			<a class="icon standard" href={$downloadTarget} download>
-				<iconify-icon icon="mdi:download" width="36" height="36" />
-			</a>
+			{#if $createArchiveTarget}
+				<button class="icon standard" on:click={onCreateArchive} aria-busy={waitingForArchive}>
+					<iconify-icon icon="mdi:folder-download" width="36" height="36" />
+				</button>
+			{:else}
+				<a class="icon standard" href={$downloadTarget} download>
+					<iconify-icon icon="mdi:download" width="36" height="36" />
+				</a>
+			{/if}
 		</div>
 	{/if}
 </header>
@@ -44,5 +69,16 @@
 	}
 	a:not([href]) {
 		visibility: hidden;
+	}
+	button[aria-busy='true'] {
+		> *,
+		&::before {
+			grid-row: 1;
+			grid-column: 1;
+			margin: auto;
+		}
+		iconify-icon {
+			visibility: hidden;
+		}
 	}
 </style>

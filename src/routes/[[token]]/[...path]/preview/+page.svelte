@@ -6,7 +6,7 @@
 
 	export let data: PageData;
 
-	$: filename = data.virtalPath[data.virtalPath.length - 1];
+	$: filename = data.virtualPath[data.virtualPath.length - 1];
 
 	let text: string;
 	$: if ((browser && data.mimetype?.startsWith('text/')) || data.mimetype == null) {

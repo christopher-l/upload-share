@@ -1,15 +1,14 @@
-import { getZipArchive } from '$lib/server/filesystem';
+import { createZipArchive } from '$lib/server/archive';
 import { getActualPath } from '$lib/server/utils.js';
 import { error } from '@sveltejs/kit';
 
-export async function GET({ params }) {
-	params.path;
-	const path = await getActualPath({ ...params, path: params.path.replace(/\.zip$/, '') });
+export async function PUT({ params }) {
+	const path = await getActualPath(params);
 	if (path) {
-		const buffer = await getZipArchive(path);
-		return new Response(buffer, {
+		const archiveFileName = await createZipArchive(path);
+		return new Response(`/archive/download/${archiveFileName}`, {
 			headers: {
-				'Content-Type': 'application/zip'
+				'Content-Type': 'text/plain'
 			}
 		});
 	}

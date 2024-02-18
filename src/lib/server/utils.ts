@@ -1,10 +1,11 @@
 import { error } from '@sveltejs/kit';
 import type { FileListEntry } from '../types';
-import { canGetZipArchive, listDir, type RootFileEntry } from './filesystem';
+import { listDir, type RootFileEntry } from './filesystem';
 import { getPathForTokenEntry, getTokenEntry } from './tokens';
+import { canGetZipArchive } from './archive';
 
 /**
- * Returns the visible path using the token entrie's name as first element.
+ * Returns the visible path using the token entry's name as first element.
  */
 export async function getVirtualPath(params: { token?: string; path?: string }): Promise<string[]> {
 	if (!params.token) {
@@ -49,27 +50,35 @@ export async function getActualPath(params: { token?: string; path?: string }): 
  *
  * @param token The root entry's download token.
  */
-export async function getDownloadHref(
-	token: string,
-	actualPath: string[],
-	virtualPath: string[],
-	isDirectory: boolean
-): Promise<string | undefined> {
+export function getDownloadHref(token: string, virtualPath: string[]): string {
 	const [rootPath, ...subPath] = virtualPath;
-	const suffix = isDirectory ? '.zip' : '';
-	const path = isDirectory ? 'archive' : 'download';
-	if (isDirectory && !(await canGetZipArchive(actualPath))) {
-		return undefined;
-	}
 	if (subPath.length > 0) {
-		return `/${path}/${token}/${subPath.join('/')}${suffix}`;
+		return `/download/${token}/${subPath.join('/')}`;
 	} else {
 		// We append the filename to the URL, so the browser has the correct name when downloading
 		// and so it will have the correct extension when used in `src` tags. The `download`
 		// endpoint needs to strip this when received. We use the additional '/' character to
 		// identify this scenario.
-		return `/${path}/${token}//${rootPath}${suffix}`;
+		return `/download/${token}//${rootPath}`;
 	}
+}
+
+/**
+ * Returns a link that will create an archive of the directory and return the
+ * archive's download link.
+ *
+ * @param token The root entry's download token.
+ */
+export async function createArchiveHref(
+	token: string,
+	actualPath: string[],
+	virtualPath: string[]
+): Promise<string | null> {
+	const [_, ...subPath] = virtualPath;
+	if (!(await canGetZipArchive(actualPath))) {
+		return null;
+	}
+	return `/archive/${token}/${subPath.join('/')}`;
 }
 
 /**
@@ -86,16 +95,15 @@ export async function getFileList(params: {
 		list.map(async (entry) => {
 			const entryToken = params.token ?? (entry as RootFileEntry).token;
 			let downloadHref: string | undefined;
-			// Don't get download links for the root directory since checking
-			// canGetZipArchive is a special case here and the root-dir listing
-			// is only available to the admin anyway.
-			if (actualPath.length > 0) {
-				downloadHref = await getDownloadHref(
-					entryToken,
-					[...actualPath, entry.name],
-					[...virtualPath, entry.name],
-					entry.type === 'inode/directory'
-				);
+			if (
+				// Don't get download links for the root directory since checking
+				// canGetZipArchive is a special case here and the root-dir listing
+				// is only available to the admin anyway.
+				actualPath.length > 0 &&
+				// Don't get download links for directories for now.
+				entry.type !== 'inode/directory'
+			) {
+				downloadHref = getDownloadHref(entryToken, [...virtualPath, entry.name]);
 			}
 			return { ...entry, downloadHref };
 		})

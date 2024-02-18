@@ -18,6 +18,7 @@ RUN pnpm run build
 
 
 FROM node:20-alpine
+RUN apk add zip
 WORKDIR /app
 COPY --from=base /app/package.json ./
 COPY --from=prod-deps /app/node_modules ./node_modules

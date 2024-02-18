@@ -1,6 +1,11 @@
 import { hasValidUploadToken } from '$lib/server/authentication';
 import { getEntryType, listDir } from '$lib/server/filesystem';
-import { getActualPath, getDownloadHref, getVirtualPath } from '$lib/server/utils';
+import {
+	createArchiveHref,
+	getActualPath,
+	getDownloadHref,
+	getVirtualPath
+} from '$lib/server/utils';
 import type { FileListEntry, NavLinks } from '$lib/types';
 import { error } from '@sveltejs/kit';
 import type { LayoutParams, LayoutServerLoad } from './$types';
@@ -11,18 +16,19 @@ export const load: LayoutServerLoad<{
 	/**
 	 * The path of the directory or file referenced by the URL path relative to the root directory.
 	 */
-	virtalPath: string[];
+	virtualPath: string[];
 	/** The entry type of the item referenced by the URL path. */
 	entryType: 'file' | 'directory';
 	/** Links for adjacent-page navigation. */
 	navLinks: NavLinks | null;
 	downloadHref: string | null;
+	createArchiveHref: string | null;
 }> = async ({ params, request, cookies }) => {
 	const hasUploadToken = hasValidUploadToken(request, cookies);
 	if (!hasUploadToken && !params.token) {
 		throw error(401);
 	}
-	const virtalPath = await getVirtualPath(params);
+	const virtualPath = await getVirtualPath(params);
 	const actualPath = await getActualPath(params);
 	const entryType = await getEntryType(actualPath);
 	if (!entryType) {
@@ -30,13 +36,15 @@ export const load: LayoutServerLoad<{
 	}
 	return {
 		hasUploadToken,
-		virtalPath,
+		virtualPath: virtualPath,
 		entryType,
 		navLinks: entryType === 'file' ? await getNavLinks({ params, actualPath }) : null,
 		downloadHref:
-			(params.token &&
-				(await getDownloadHref(params.token, actualPath, virtalPath, entryType === 'directory'))) ??
-			null
+			params.token && entryType === 'file' ? getDownloadHref(params.token, virtualPath) : null,
+		createArchiveHref:
+			params.token && entryType === 'directory'
+				? await createArchiveHref(params.token, actualPath, virtualPath)
+				: null
 	};
 };
 
