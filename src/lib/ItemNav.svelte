@@ -27,9 +27,9 @@
 <style lang="scss">
 	nav {
 		display: flex;
-		background-color: var(--card-sectionning-background-color);
-		border: var(--border-width) solid var(--secondary);
-		border-radius: var(--border-radius);
+		background-color: var(--pico-card-sectioning-background-color);
+		border: var(--pico-border-width) solid var(--pico-form-element-border-color);
+		border-radius: var(--pico-border-radius);
 		overflow: hidden;
 	}
 	.center {
@@ -39,7 +39,7 @@
 		align-self: center;
 		flex-grow: 1;
 		justify-content: center;
-		padding: calc(var(--spacing) / 2);
+		padding: calc(var(--pico-spacing) / 2);
 		gap: 0.3em;
 	}
 	.title {
@@ -50,7 +50,11 @@
 	a {
 		display: flex;
 		align-items: center;
-		padding: var(--form-element-spacing-vertical) var(--form-element-spacing-horizontal);
+		padding: var(--pico-form-element-spacing-vertical) var(--pico-form-element-spacing-horizontal);
 		border-radius: 0;
+		&:not([href]) {
+			opacity: 0.5;
+			pointer-events: none;
+		}
 	}
 </style>

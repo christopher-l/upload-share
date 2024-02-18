@@ -9,9 +9,9 @@
 
 <svelte:head>
 	{#if $prefersDarkMode}
-		<meta name="theme-color" content="#1b2832" />
+		<meta name="theme-color" content="#202632" />
 	{:else}
-		<meta name="theme-color" content="#fbfbfc" />
+		<meta name="theme-color" content="#e7eaf0" />
 	{/if}
 </svelte:head>
 

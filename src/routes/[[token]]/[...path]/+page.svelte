@@ -38,6 +38,6 @@
 
 <style lang="scss">
 	main {
-		padding: var(--block-spacing-vertical) var(--block-spacing-horizontal);
+		padding: var(--pico-block-spacing-vertical) var(--pico-block-spacing-horizontal);
 	}
 </style>

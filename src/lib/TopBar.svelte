@@ -49,26 +49,34 @@
 
 <style lang="scss">
 	header {
+		position: sticky;
+		top: 0;
+		z-index: 1;
+		backdrop-filter: blur(10px);
 		// Keep height when there are no buttons.
 		box-sizing: content-box;
-		min-height: calc(var(--spacing) * 2 + 36px);
+		min-height: calc(var(--pico-spacing) * 2 + 36px);
 		flex-shrink: 0;
-		background-color: var(--dropdown-background-color);
-		border-bottom: 1px solid var(--secondary);
+		background-color: var(--pico-muted-border-color);
+		border-bottom: 1px solid var(--pico-form-element-border-color);
 		justify-content: space-between;
 		align-items: center;
+		box-shadow: var(--pico-box-shadow);
 	}
 	.left,
 	.right {
 		justify-content: center;
-		padding: calc(var(--spacing) / 2);
+		padding: calc(var(--pico-spacing) / 2);
 	}
 	.center {
 		min-width: 0;
-		padding: calc(var(--spacing) / 2) var(--spacing);
+		padding: calc(var(--pico-spacing) / 2) var(--pico-spacing);
 	}
 	a:not([href]) {
 		visibility: hidden;
+	}
+	button {
+		border: none;
 	}
 	button[aria-busy='true'] {
 		> *,

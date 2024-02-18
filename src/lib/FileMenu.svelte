@@ -14,12 +14,12 @@
 	}
 </script>
 
-<details role="list" bind:this={details}>
+<details class="dropdown" bind:this={details}>
 	<!-- svelte-ignore a11y-no-redundant-roles -->
-	<summary aria-haspopup="listbox" role="button" class="icon standard">
+	<summary class="icon standard" role="button">
 		<iconify-icon icon="mdi:dots-vertical" width="36" height="36" />
 	</summary>
-	<ul role="listbox">
+	<ul dir="rtl">
 		<li>
 			<!-- svelte-ignore a11y-missing-attribute -->
 			<!-- svelte-ignore a11y-click-events-have-key-events -->
@@ -37,7 +37,7 @@
 <dialog bind:this={dialog} on:click|self={() => dialog.close()}>
 	<article>
 		<header>
-			Delete {file.name}
+			<strong>Delete {file.name}</strong>
 		</header>
 		<p>
 			{#if file.type === 'inode/directory'}
@@ -83,9 +83,9 @@
 			cursor: pointer;
 			display: flex;
 			align-items: center;
-			gap: var(--spacing);
+			gap: var(--pico-spacing);
 			&.danger {
-				color: var(--del-color);
+				color: var(--pico-del-color);
 			}
 		}
 	}
@@ -95,7 +95,7 @@
 		}
 		footer {
 			justify-content: flex-end;
-			gap: var(--spacing);
+			gap: var(--pico-spacing);
 		}
 		form {
 			margin: 0;
@@ -106,9 +106,9 @@
 			margin: unset;
 		}
 		button.danger {
-			background-color: var(--del-color);
-			color: var(--primary-inverse);
-			border-color: var(--form-element-invalid-active-border-color);
+			background-color: var(--pico-del-color);
+			color: var(--pico-primary-inverse);
+			border-color: var(--pico-form-element-invalid-active-border-color);
 		}
 	}
 </style>

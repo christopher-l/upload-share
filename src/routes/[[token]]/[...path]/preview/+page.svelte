@@ -46,8 +46,11 @@
 <style lang="scss">
 	main {
 		flex-grow: 1;
-		padding: var(--block-spacing-vertical) var(--block-spacing-horizontal);
+		padding: var(--pico-block-spacing-vertical) var(--pico-block-spacing-horizontal);
 		min-height: 0;
+		// Allow content to grow to full viewport height including space for the
+		// browser UI that scrolls away on mobile devices. Subtract the header height.
+		max-height: calc(100vh - 76px);
 	}
 	img {
 		min-height: 0;
@@ -60,13 +63,13 @@
 		min-height: 0;
 	}
 	pre {
-		padding: var(--spacing);
+		padding: var(--pico-spacing);
 		margin: 0;
 	}
 	.fallback {
 		flex-grow: 1;
 		justify-content: center;
 		align-items: center;
-		gap: var(--spacing);
+		gap: var(--pico-spacing);
 	}
 </style>

@@ -76,10 +76,10 @@
 			position: relative;
 			list-style: none;
 			display: flex;
-			border-radius: var(--border-radius);
+			border-radius: var(--pico-border-radius);
 			&:hover,
 			&:focus-within {
-				background-color: var(--secondary-focus);
+				background-color: var(--pico-secondary-focus);
 			}
 			progress {
 				position: absolute;
@@ -88,12 +88,12 @@
 				z-index: -1;
 				margin: 0;
 				&.error {
-					background-color: var(--form-element-invalid-focus-color);
+					background-color: var(--pico-form-element-invalid-focus-color);
 					&::-webkit-progress-value {
-						background-color: var(--del-color);
+						background-color: var(--pico-del-color);
 					}
 					&::-moz-progress-bar {
-						background-color: var(--del-color);
+						background-color: var(--pico-del-color);
 					}
 				}
 			}
@@ -101,9 +101,10 @@
 				flex-grow: 1;
 				display: flex;
 				align-items: center;
-				gap: var(--spacing);
-				padding: 0 var(--spacing);
-				--color: inherit;
+				gap: var(--pico-spacing);
+				padding: 0 var(--pico-spacing);
+				--pico-color: inherit;
+				--pico-text-decoration: unset;
 				overflow-wrap: anywhere;
 				&:hover,
 				&:focus {

@@ -5,10 +5,6 @@ html {
 
 body {
 	min-height: 100%;
-	// Allow content to grow to full viewport height including space for the
-	// browser UI that scrolls away on mobile devices. Growing further is
-	// possible by overflowing body.
-	max-height: 100vh;
 }
 
 div,
@@ -31,32 +27,36 @@ main {
 }
 
 a {
-	border-radius: var(--border-radius);
+	border-radius: var(--pico-border-radius);
 }
 
 button,
 [role='button'],
 a {
 	&.standard {
-		--color: inherit;
+		--pico-color: inherit;
 		background: none;
 		border-color: transparent;
 		&:focus,
 		&:hover {
-			background-color: var(--primary-focus);
+			--pico-color: inherit;
+			background-color: var(--pico-secondary-focus);
+		}
+		&:focus {
+			--pico-box-shadow: var(--pico-button-hover-box-shadow, 0 0 0 rgba(0, 0, 0, 0)), 0 0 0 var(--pico-outline-width) var(--pico-secondary-focus);
 		}
 	}
 	&.standard.danger {
 		&:focus,
 		&:hover {
-			--color: var(--contrast-inverse);
-			background-color: var(--del-color);
+			--color: var(--pico-contrast-inverse);
+			background-color: var(--pico-del-color);
 		}
 	}
 	&.icon {
 		display: grid;
 		width: unset;
 		margin: unset;
-		padding: calc(var(--spacing) / 2);
+		padding: calc(var(--pico-spacing) / 2);
 	}
 }

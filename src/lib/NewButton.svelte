@@ -105,11 +105,9 @@
 {:else if $uploadingFiles}
 	<FileList fileList={$uploadingFiles} />
 {:else if mode === 'menu'}
-	<details role="list" bind:this={menu}>
-		<summary class="outline" class:dragging aria-haspopup="listbox" aria-busy={awaitingResponse}>
-			+
-		</summary>
-		<ul role="listbox">
+	<details class="dropdown" bind:this={menu}>
+		<summary class="outline" class:dragging aria-busy={awaitingResponse}> + </summary>
+		<ul>
 			<li>
 				<!-- svelte-ignore a11y-missing-attribute -->
 				<!-- svelte-ignore a11y-no-static-element-interactions -->
@@ -165,39 +163,39 @@
 		margin: 0;
 		[icon],
 		button {
-			top: var(--border-width);
+			top: calc(var(--pico-border-width) * 2);
 			position: absolute;
-			height: calc(100% - var(--spacing) - var(--border-width) * 2);
+			height: calc(100% - var(--pico-spacing) - var(--pico-border-width) * 4);
 		}
 		[icon] {
-			padding-left: var(--spacing);
+			padding-left: var(--pico-spacing);
 			display: flex;
 			align-items: center;
 		}
 		input {
-			padding-left: calc(var(--spacing) * 2 + 36px) !important;
-			padding-right: calc(var(--form-element-spacing-horizontal) * 3 + 3.5rem);
+			padding-left: calc(var(--pico-spacing) * 2 + 36px) !important;
+			padding-right: calc(var(--pico-form-element-spacing-horizontal) * 3 + 3.5rem);
 		}
 		button {
-			right: var(--border-width);
+			right: calc(var(--pico-border-width) * 2);
 			width: unset;
 		}
 	}
 	summary {
 		text-align: center;
 		&.dragging {
-			background-color: var(--form-element-valid-focus-color);
+			background-color: var(--pico-form-element-valid-focus-color);
 		}
 	}
 	details a {
 		display: flex;
-		gap: var(--spacing);
+		gap: var(--pico-spacing);
 		align-items: center;
 		cursor: pointer;
 	}
 	.new-folder-button {
 		display: flex;
-		gap: var(--spacing);
+		gap: var(--pico-spacing);
 		align-items: center;
 		iconify-icon {
 			height: 0;
