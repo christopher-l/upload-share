@@ -39,6 +39,7 @@
 		"@picocss/pico": "^2.0.6",
 		"file-type": "^19.5.0",
 		"iconify-icon": "^2.1.0",
-		"mime": "^4.0.4"
+		"mime": "^4.0.4",
+		"svelte-qrcode": "^1.0.1"
 	}
 }
