@@ -6,18 +6,23 @@ A simplistic file-sharing service for self hosting.
 
 ## Developing
 
-Once you've created a project and installed dependencies with `npm install` (or `pnpm install` or `yarn`), start a development server:
+Once you've created a project and installed dependencies with `pnpm install` (or `pnpm install` or `yarn`), start a development server:
 
 ```bash
-npm run dev
+# Start the server
+pnpm run dev
 
-# or start the server and open the app in a new browser tab
-npm run dev -- --open
+# Start the server and open the app in a new browser tab
+pnpm run dev -- --open
+
+# Start the server and make it visible for external hosts
+pnpm run dev --host 0.0.0.0
 ```
 
 ## Configuration
 
 The application is configured via environment variables provided in the file `.env`.
+
 ```bash
 # Copy the default configuration file
 cp .env.example .env
