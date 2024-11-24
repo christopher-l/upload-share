@@ -5,16 +5,16 @@
 	import { selectDestination } from './stores';
 	import { uploadFiles as doUploadFiles, uploadingFiles } from './uploadFiles';
 
-	let menu: HTMLDetailsElement;
+	let menu: HTMLDetailsElement | undefined = $state();
 	/** The user chose to create a new folder and is currently prompted to choose a name. */
-	let creatingFolder = false;
-	let newFolderName = '';
+	let creatingFolder = $state(false);
+	let newFolderName = $state('');
 	/** The user requested an action and the request is currently in flight to the server. */
-	let awaitingResponse = false;
+	let awaitingResponse = $state(false);
 
-	let fileInput: HTMLInputElement;
+	let fileInput: HTMLInputElement | undefined = $state();
 	/** Whether the user is currently dragging a file above the page. */
-	let dragging = false;
+	let dragging = $state(false);
 
 	/**
 	 * The button's initial form.
@@ -23,20 +23,23 @@
 	 *   creating a new folder.
 	 * - folder: Creates a new folder.
 	 */
-	let mode: 'menu' | 'folder';
-	$: if ($selectDestination) {
-		mode = 'folder';
-	} else {
-		mode = 'menu';
-	}
+	let mode: 'menu' | 'folder' = $derived.by(() => {
+		if ($selectDestination) {
+			return 'folder';
+		} else {
+			return 'menu';
+		}
+	});
 
-	$: nameIsValid = !newFolderName.includes('/');
+	let nameIsValid = $derived(!newFolderName.includes('/'));
 
-	$: if ($navigating) {
-		creatingFolder = false;
-		awaitingResponse = false;
-		dragging = false;
-	}
+	$effect(() => {
+		if ($navigating) {
+			creatingFolder = false;
+			awaitingResponse = false;
+			dragging = false;
+		}
+	});
 
 	/** Prompts the user to choose a name for a new folder to create. */
 	function newFolder(): void {
@@ -49,7 +52,7 @@
 		input.select();
 	}
 
-	function uploadFiles(files = fileInput.files): void {
+	function uploadFiles(files = fileInput?.files): void {
 		menu?.removeAttribute('open');
 		doUploadFiles(files);
 	}
@@ -58,17 +61,20 @@
 <svelte:document />
 
 <svelte:body
-	on:drop|preventDefault={(event) => {
+	ondrop={(event) => {
+		event.preventDefault();
 		dragging = false;
 		uploadFiles(event.dataTransfer?.files);
 	}}
-	on:dragover|preventDefault
-	on:dragenter|capture={(event) => {
+	ondragover={(event) => {
+		event.preventDefault();
+	}}
+	ondragentercapture={(event) => {
 		if (event.dataTransfer && [...event.dataTransfer.items].some((item) => item.kind === 'file')) {
 			dragging = true;
 		}
 	}}
-	on:dragleave|capture={(event) => {
+	ondragleavecapture={(event) => {
 		if (!event.relatedTarget) {
 			dragging = false;
 		}
@@ -109,19 +115,19 @@
 		<summary class="outline" class:dragging aria-busy={awaitingResponse}> + </summary>
 		<ul>
 			<li>
-				<!-- svelte-ignore a11y-missing-attribute -->
-				<!-- svelte-ignore a11y-no-static-element-interactions -->
-				<!-- svelte-ignore a11y-click-events-have-key-events -->
-				<a on:click={newFolder}>
+				<!-- svelte-ignore a11y_missing_attribute -->
+				<!-- svelte-ignore a11y_no_static_element_interactions -->
+				<!-- svelte-ignore a11y_click_events_have_key_events -->
+				<a onclick={newFolder}>
 					<iconify-icon icon="mdi:folder" width="36" height="36"></iconify-icon>
 					New Folder
 				</a>
 			</li>
 			<li>
-				<!-- svelte-ignore a11y-missing-attribute -->
-				<!-- svelte-ignore a11y-click-events-have-key-events -->
-				<!-- svelte-ignore a11y-no-static-element-interactions -->
-				<a on:click={() => fileInput.click()}>
+				<!-- svelte-ignore a11y_missing_attribute -->
+				<!-- svelte-ignore a11y_click_events_have_key_events -->
+				<!-- svelte-ignore a11y_no_static_element_interactions -->
+				<a onclick={() => fileInput?.click()}>
 					<iconify-icon icon="ic:round-upload" width="36" height="36"></iconify-icon>
 					Upload Files
 				</a>
@@ -143,7 +149,7 @@
 						type="file"
 						name="file"
 						multiple
-						on:change={() => uploadFiles()}
+						onchange={() => uploadFiles()}
 					/>
 					<input type="submit" />
 				</form>
@@ -151,7 +157,7 @@
 		</ul>
 	</details>
 {:else if mode === 'folder'}
-	<button class="new-folder-button secondary outline" on:click={newFolder}>
+	<button class="new-folder-button secondary outline" onclick={newFolder}>
 		<iconify-icon icon="mdi:folder" width="36" height="36"></iconify-icon>
 		New folder
 	</button>

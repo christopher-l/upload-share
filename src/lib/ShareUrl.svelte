@@ -2,8 +2,12 @@
 	// @ts-ignore
 	import QrCode from 'svelte-qrcode';
 
-	export let url: string;
-	let dialog: HTMLDialogElement;
+	interface Props {
+		url: string;
+	}
+
+	let { url }: Props = $props();
+	let dialog: HTMLDialogElement | undefined = $state();
 
 	function onClick(event: MouseEvent) {
 		const target = event.target as HTMLInputElement;
@@ -13,20 +17,20 @@
 </script>
 
 <div class="container">
-	<input readonly value={url} on:click={onClick} />
-	<button aria-label="show qr code" class="secondary" on:click={() => dialog.showModal()}>
+	<input readonly value={url} onclick={onClick} />
+	<button aria-label="show qr code" class="secondary" onclick={() => dialog?.showModal()}>
 		<iconify-icon icon="mdi:qrcode-scan" width="24" height="24"></iconify-icon>
 	</button>
 </div>
-<!-- svelte-ignore a11y-click-events-have-key-events -->
-<!-- svelte-ignore a11y-no-noninteractive-element-interactions -->
-<dialog bind:this={dialog} on:click|self={() => dialog.close()}>
+<!-- svelte-ignore a11y_click_events_have_key_events -->
+<!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
+<dialog bind:this={dialog} onclick={(event) => event.target === dialog && dialog?.close()}>
 	<article>
 		<div class="qr-container">
 			<QrCode value={url} size="500" />
 		</div>
 		<footer>
-			<button class="secondary" on:click={() => dialog.close()}>Close</button>
+			<button class="secondary" onclick={() => dialog?.close()}>Close</button>
 		</footer>
 	</article>
 </dialog>

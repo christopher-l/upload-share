@@ -4,8 +4,12 @@
 	import type { FileListEntry } from './types';
 	import { isRootFileEntry } from './utils';
 
-	export let fileList: FileListEntry[];
-	export let showFileMenu = false;
+	interface Props {
+		fileList: FileListEntry[];
+		showFileMenu?: boolean;
+	}
+
+	let { fileList, showFileMenu = false }: Props = $props();
 
 	const iconMap = {
 		'inode/directory': 'mdi:folder',
@@ -17,7 +21,7 @@
 		other: 'mdi:file'
 	};
 
-	$: getHref = (entry: FileListEntry) => {
+	let getHref = $derived((entry: FileListEntry) => {
 		if (entry.progress != null || entry.error) {
 			return null;
 		}
@@ -26,7 +30,7 @@
 		} else {
 			return $page.url.pathname + '/' + entry.name;
 		}
-	};
+	});
 
 	function getIcon(type: string | null): string {
 		const baseType = type?.split('/', 1)?.[0];
@@ -49,7 +53,7 @@
 				<span>{file.name}</span>
 			</a>
 			{#if file.abort}
-				<button aria-label="close" class="standard icon" on:click={() => file.abort?.()}>
+				<button aria-label="close" class="standard icon" onclick={() => file.abort?.()}>
 					<iconify-icon icon="mdi:close-circle" width="36" height="36"></iconify-icon>
 				</button>
 			{:else if showFileMenu}

@@ -1,8 +1,14 @@
 <script lang="ts">
 	import { backTarget, downloadTarget, createArchiveTarget } from '$lib/stores';
-	export let currentItemName: string;
+	import type { Snippet } from 'svelte';
+	interface Props {
+		currentItemName: string;
+		children: Snippet;
+	}
 
-	let waitingForArchive = false;
+	let { currentItemName, children }: Props = $props();
+
+	let waitingForArchive = $state(false);
 
 	async function onCreateArchive() {
 		console.log('onCreateArchive', $createArchiveTarget);
@@ -30,7 +36,7 @@
 		</div>
 	{/if}
 	<div class="center container">
-		<slot />
+		{@render children()}
 	</div>
 	{#if $backTarget || $downloadTarget || $createArchiveTarget}
 		<div class="right">
@@ -38,7 +44,7 @@
 				<button
 					aria-label="download all"
 					class="icon standard"
-					on:click={onCreateArchive}
+					onclick={onCreateArchive}
 					aria-busy={waitingForArchive}
 				>
 					<iconify-icon icon="mdi:folder-download" width="36" height="36"></iconify-icon>

@@ -18,7 +18,7 @@ if (browser) {
 	});
 }
 
-export async function uploadFiles(files: FileList | File[] | null): Promise<void> {
+export async function uploadFiles(files: FileList | File[] | null | undefined): Promise<void> {
 	if (files) {
 		await Promise.all([...files].map(uploadFile)).then(() => {
 			invalidateAll();

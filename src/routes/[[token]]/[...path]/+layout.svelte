@@ -3,26 +3,38 @@
 	import { page } from '$app/stores';
 	import ItemNav from '$lib/ItemNav.svelte';
 	import TopBar from '$lib/TopBar.svelte';
-	import { backTarget, downloadTarget, createArchiveTarget } from '$lib/stores';
+	import { backTarget, createArchiveTarget, downloadTarget } from '$lib/stores';
 	import { getUrlPath } from '$lib/utils';
+	import type { Snippet } from 'svelte';
 	import type { PageData, RouteParams } from './$types';
 
-	export let data: PageData;
-
-	$: title = data.virtualPath.length
-		? data.virtualPath[data.virtualPath.length - 1]
-		: 'Upload Share';
-	$: path = getUrlPath($page.params as RouteParams);
-	$: downloadTarget.set(data.downloadHref);
-	$: createArchiveTarget.set(data.createArchiveHref);
-	// Don't show the back button to the root directory for users without upload token.
-	$: if (path.split('/').length > 1) {
-		backTarget.set(`/${path.split('/').slice(0, -1).join('/')}`);
-	} else if (data.hasUploadToken && path.length > 0) {
-		backTarget.set('/');
-	} else {
-		backTarget.set(null);
+	interface Props {
+		data: PageData;
+		children: Snippet;
 	}
+
+	let { data, children }: Props = $props();
+
+	let title = $derived(
+		data.virtualPath.length ? data.virtualPath[data.virtualPath.length - 1] : 'Upload Share'
+	);
+	let path = $derived(getUrlPath($page.params as RouteParams));
+	$effect(() => {
+		downloadTarget.set(data.downloadHref);
+	});
+	$effect(() => {
+		createArchiveTarget.set(data.createArchiveHref);
+	});
+	// Don't show the back button to the root directory for users without upload token.
+	$effect(() => {
+		if (path.split('/').length > 1) {
+			backTarget.set(`/${path.split('/').slice(0, -1).join('/')}`);
+		} else if (data.hasUploadToken && path.length > 0) {
+			backTarget.set('/');
+		} else {
+			backTarget.set(null);
+		}
+	});
 </script>
 
 <svelte:head>
@@ -36,4 +48,4 @@
 	<ItemNav navLinks={data.navLinks} currentItemName={title} />
 </TopBar>
 
-<slot />
+{@render children()}

@@ -11,7 +11,7 @@
 	}
 </script>
 
-<button class="upload-here-button" on:click={uploadHere}>
+<button class="upload-here-button" onclick={uploadHere}>
 	<iconify-icon icon="ic:round-upload" width="36" height="36"></iconify-icon>
 	Upload here
 </button>

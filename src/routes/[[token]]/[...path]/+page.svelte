@@ -10,7 +10,11 @@
 	import UploadHereButton from '../../../lib/UploadHereButton.svelte';
 	import type { PageData } from './$types';
 
-	export let data: PageData;
+	interface Props {
+		data: PageData;
+	}
+
+	let { data }: Props = $props();
 
 	onMount(() => {
 		if ($page.url.searchParams.has('select-destination')) {

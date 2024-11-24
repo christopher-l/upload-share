@@ -1,7 +1,11 @@
 <script lang="ts">
-	export let filePath: string[];
+	interface Props {
+		filePath: string[];
+	}
 
-	$: getBreadcrumbsHref = (index: number) => {
+	let { filePath }: Props = $props();
+
+	let getBreadcrumbsHref = $derived((index: number) => {
 		if (index === filePath.length - 2) {
 			return '.';
 		} else {
@@ -9,7 +13,7 @@
 				.fill('..')
 				.join('/');
 		}
-	};
+	});
 </script>
 
 {#if filePath.length > 0}

@@ -4,16 +4,22 @@
 	import ShareUrl from '../../../../lib/ShareUrl.svelte';
 	import type { PageData } from './$types';
 
-	export let data: PageData;
-
-	$: filename = data.virtualPath[data.virtualPath.length - 1];
-
-	let text: string;
-	$: if ((browser && data.mimetype?.startsWith('text/')) || data.mimetype == null) {
-		fetch(data.downloadHref!)
-			.then((response) => response.text())
-			.then((t) => (text = t));
+	interface Props {
+		data: PageData;
 	}
+
+	let { data }: Props = $props();
+
+	let filename = $derived(data.virtualPath[data.virtualPath.length - 1]);
+
+	let text: string = $state('');
+	$effect(() => {
+		if ((browser && data.mimetype?.startsWith('text/')) || data.mimetype == null) {
+			fetch(data.downloadHref!)
+				.then((response) => response.text())
+				.then((t) => (text = t));
+		}
+	});
 </script>
 
 <main class="container">
@@ -26,7 +32,7 @@
 	{:else if data.mimetype?.startsWith('audio/')}
 		<audio src={data.downloadHref} controls></audio>
 	{:else if data.mimetype?.startsWith('video/')}
-		<!-- svelte-ignore a11y-media-has-caption -->
+		<!-- svelte-ignore a11y_media_has_caption -->
 		<video src={data.downloadHref} controls></video>
 	{:else if data.mimetype?.startsWith('text/') || data.mimetype == null}
 		{#if text}

@@ -1,8 +1,12 @@
 <script lang="ts">
 	import type { NavLinks } from './types';
 
-	export let navLinks: NavLinks | null;
-	export let currentItemName: string;
+	interface Props {
+		navLinks: NavLinks | null;
+		currentItemName: string;
+	}
+
+	let { navLinks, currentItemName }: Props = $props();
 </script>
 
 <nav>

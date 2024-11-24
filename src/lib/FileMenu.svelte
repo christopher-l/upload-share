@@ -2,29 +2,33 @@
 	import { enhance } from '$app/forms';
 	import type { FileListEntry } from './types';
 
-	export let file: FileListEntry;
+	interface Props {
+		file: FileListEntry;
+	}
 
-	let details: HTMLDetailsElement;
-	let dialog: HTMLDialogElement;
-	let deleting = false;
+	let { file }: Props = $props();
+
+	let details: HTMLDetailsElement | undefined = $state();
+	let dialog: HTMLDialogElement | undefined = $state();
+	let deleting = $state(false);
 
 	function confirmDelete(): void {
-		dialog.showModal();
-		details.removeAttribute('open');
+		dialog?.showModal();
+		details?.removeAttribute('open');
 	}
 </script>
 
 <details class="dropdown" bind:this={details}>
-	<!-- svelte-ignore a11y-no-redundant-roles -->
+	<!-- svelte-ignore a11y_no_redundant_roles -->
 	<summary class="icon standard" role="button">
 		<iconify-icon icon="mdi:dots-vertical" width="36" height="36"></iconify-icon>
 	</summary>
 	<ul dir="rtl">
 		<li>
-			<!-- svelte-ignore a11y-missing-attribute -->
-			<!-- svelte-ignore a11y-click-events-have-key-events -->
-			<!-- svelte-ignore a11y-no-static-element-interactions -->
-			<a class="danger" on:click={confirmDelete}>
+			<!-- svelte-ignore a11y_missing_attribute -->
+			<!-- svelte-ignore a11y_click_events_have_key_events -->
+			<!-- svelte-ignore a11y_no_static_element_interactions -->
+			<a class="danger" onclick={confirmDelete}>
 				<iconify-icon icon="mdi:delete" width="36" height="36"></iconify-icon>
 				Delete
 			</a>
@@ -32,9 +36,9 @@
 	</ul>
 </details>
 
-<!-- svelte-ignore a11y-click-events-have-key-events -->
-<!-- svelte-ignore a11y-no-noninteractive-element-interactions -->
-<dialog bind:this={dialog} on:click|self={() => dialog.close()}>
+<!-- svelte-ignore a11y_click_events_have_key_events -->
+<!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
+<dialog bind:this={dialog} onclick={(event) => event.target === dialog && dialog?.close()}>
 	<article>
 		<header>
 			<strong>Delete {file.name}</strong>
@@ -47,8 +51,8 @@
 			{/if}
 		</p>
 		<footer>
-			<!-- svelte-ignore a11y-invalid-attribute -->
-			<button class="secondary" disabled={deleting} on:click={() => dialog.close()}>Cancel</button>
+			<!-- svelte-ignore a11y_invalid_attribute -->
+			<button class="secondary" disabled={deleting} onclick={() => dialog?.close()}>Cancel</button>
 			<form
 				method="POST"
 				action="?/delete"

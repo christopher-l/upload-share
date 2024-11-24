@@ -2,7 +2,14 @@
 	import { getMediaQueryStore } from '$lib/mediaQueryStore';
 	import '@picocss/pico/css/pico.min.css';
 	import 'iconify-icon';
+	import type { Snippet } from 'svelte';
 	import '../app.scss';
+
+	interface Props {
+		children: Snippet;
+	}
+
+	let { children }: Props = $props();
 
 	const prefersDarkMode = getMediaQueryStore('(prefers-color-scheme:dark)');
 </script>
@@ -15,4 +22,4 @@
 	{/if}
 </svelte:head>
 
-<slot />
+{@render children()}
