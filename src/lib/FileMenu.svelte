@@ -17,7 +17,7 @@
 <details class="dropdown" bind:this={details}>
 	<!-- svelte-ignore a11y-no-redundant-roles -->
 	<summary class="icon standard" role="button">
-		<iconify-icon icon="mdi:dots-vertical" width="36" height="36" />
+		<iconify-icon icon="mdi:dots-vertical" width="36" height="36"></iconify-icon>
 	</summary>
 	<ul dir="rtl">
 		<li>
@@ -25,7 +25,7 @@
 			<!-- svelte-ignore a11y-click-events-have-key-events -->
 			<!-- svelte-ignore a11y-no-static-element-interactions -->
 			<a class="danger" on:click={confirmDelete}>
-				<iconify-icon icon="mdi:delete" width="36" height="36" />
+				<iconify-icon icon="mdi:delete" width="36" height="36"></iconify-icon>
 				Delete
 			</a>
 		</li>
@@ -67,7 +67,7 @@
 </dialog>
 
 <style lang="scss">
-	details {
+	details.dropdown {
 		align-self: center;
 		margin: 0;
 		summary {

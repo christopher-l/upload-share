@@ -42,26 +42,26 @@
 	{#each fileList as file (file.token ?? file.name)}
 		<li>
 			{#if file.progress != null}
-				<progress value={file.progress ?? 0.5} class:error={file.error} />
+				<progress value={file.progress ?? 0.5} class:error={file.error}></progress>
 			{/if}
 			<a href={getHref(file)}>
-				<iconify-icon icon={getIcon(file.type)} width="36" height="36" />
+				<iconify-icon icon={getIcon(file.type)} width="36" height="36"></iconify-icon>
 				<span>{file.name}</span>
 			</a>
 			{#if file.abort}
-				<button class="standard icon" on:click={() => file.abort?.()}>
-					<iconify-icon icon="mdi:close-circle" width="36" height="36" />
+				<button aria-label="close" class="standard icon" on:click={() => file.abort?.()}>
+					<iconify-icon icon="mdi:close-circle" width="36" height="36"></iconify-icon>
 				</button>
 			{:else if showFileMenu}
 				<FileMenu {file} />
 			{:else if file.downloadHref}
-				<a href={file.downloadHref} download class="standard icon">
-					<iconify-icon icon="mdi:download" width="36" height="36" />
+				<a href={file.downloadHref} aria-label="download" download class="standard icon">
+					<iconify-icon icon="mdi:download" width="36" height="36"></iconify-icon>
 				</a>
 			{:else}
 				<!-- Render hidden button to take up space. -->
-				<button style="visibility: hidden" class="standard icon">
-					<iconify-icon icon="mdi:download" width="36" height="36" />
+				<button aria-hidden="true" style="visibility: hidden" class="standard icon">
+					<iconify-icon icon="mdi:download" width="36" height="36"></iconify-icon>
 				</button>
 			{/if}
 		</li>

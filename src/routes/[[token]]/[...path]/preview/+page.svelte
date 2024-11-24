@@ -24,17 +24,18 @@
 	{#if data.mimetype?.startsWith('image/')}
 		<img src={data.downloadHref} alt={filename} />
 	{:else if data.mimetype?.startsWith('audio/')}
-		<audio src={data.downloadHref} controls />
+		<audio src={data.downloadHref} controls></audio>
 	{:else if data.mimetype?.startsWith('video/')}
 		<!-- svelte-ignore a11y-media-has-caption -->
-		<video src={data.downloadHref} controls />
+		<video src={data.downloadHref} controls></video>
 	{:else if data.mimetype?.startsWith('text/') || data.mimetype == null}
 		{#if text}
 			<pre>{text}</pre>
 		{/if}
 	{:else if data.mimetype === 'application/pdf'}
 		<!-- We set height to a very large value, so the element will take up all available space -->
-		<object title={filename} data={data.downloadHref} type="application/pdf" height="1000000" />
+		<object title={filename} data={data.downloadHref} type="application/pdf" height="1000000"
+		></object>
 	{:else}
 		<div class="fallback">
 			<span>{filename}</span>

@@ -7,8 +7,8 @@
 
 <nav>
 	{#if navLinks}
-		<a href={navLinks.previous} class="secondary" role="button">
-			<iconify-icon icon="mingcute:left-fill" />
+		<a href={navLinks.previous} aria-label="previous item" class="secondary" role="button">
+			<iconify-icon icon="mingcute:left-fill"></iconify-icon>
 		</a>
 	{/if}
 	<div class="center">
@@ -18,8 +18,8 @@
 		{/if}
 	</div>
 	{#if navLinks}
-		<a href={navLinks.next} class="secondary" role="button">
-			<iconify-icon icon="mingcute:right-fill" />
+		<a href={navLinks.next} aria-label="next item" class="secondary" role="button">
+			<iconify-icon icon="mingcute:right-fill"></iconify-icon>
 		</a>
 	{/if}
 </nav>

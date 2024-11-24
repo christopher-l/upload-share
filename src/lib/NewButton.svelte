@@ -64,7 +64,7 @@
 	}}
 	on:dragover|preventDefault
 	on:dragenter|capture={(event) => {
-		if (!event.relatedTarget && event.dataTransfer?.files) {
+		if (event.dataTransfer && [...event.dataTransfer.items].some((item) => item.kind === 'file')) {
 			dragging = true;
 		}
 	}}
@@ -88,7 +88,7 @@
 			};
 		}}
 	>
-		<iconify-icon icon="mdi:folder" width="36" height="36" />
+		<iconify-icon icon="mdi:folder" width="36" height="36"></iconify-icon>
 		<input
 			name="name"
 			bind:value={newFolderName}
@@ -113,7 +113,7 @@
 				<!-- svelte-ignore a11y-no-static-element-interactions -->
 				<!-- svelte-ignore a11y-click-events-have-key-events -->
 				<a on:click={newFolder}>
-					<iconify-icon icon="mdi:folder" width="36" height="36" />
+					<iconify-icon icon="mdi:folder" width="36" height="36"></iconify-icon>
 					New Folder
 				</a>
 			</li>
@@ -122,7 +122,7 @@
 				<!-- svelte-ignore a11y-click-events-have-key-events -->
 				<!-- svelte-ignore a11y-no-static-element-interactions -->
 				<a on:click={() => fileInput.click()}>
-					<iconify-icon icon="ic:round-upload" width="36" height="36" />
+					<iconify-icon icon="ic:round-upload" width="36" height="36"></iconify-icon>
 					Upload Files
 				</a>
 				<form
@@ -152,7 +152,7 @@
 	</details>
 {:else if mode === 'folder'}
 	<button class="new-folder-button secondary outline" on:click={newFolder}>
-		<iconify-icon icon="mdi:folder" width="36" height="36" />
+		<iconify-icon icon="mdi:folder" width="36" height="36"></iconify-icon>
 		New folder
 	</button>
 {/if}
@@ -181,13 +181,17 @@
 			width: unset;
 		}
 	}
-	summary {
+	details.dropdown summary {
 		text-align: center;
 		&.dragging {
+			color: var(--pico-color);
 			background-color: var(--pico-form-element-valid-focus-color);
+			&::after {
+				visibility: hidden;
+			}
 		}
 	}
-	details a {
+	details.dropdown a {
 		display: flex;
 		gap: var(--pico-spacing);
 		align-items: center;

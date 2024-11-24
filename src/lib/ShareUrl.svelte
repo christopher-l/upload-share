@@ -14,8 +14,8 @@
 
 <div class="container">
 	<input readonly value={url} on:click={onClick} />
-	<button class="secondary" on:click={() => dialog.showModal()}>
-		<iconify-icon icon="mdi:qrcode-scan" width="24" height="24" />
+	<button aria-label="show qr code" class="secondary" on:click={() => dialog.showModal()}>
+		<iconify-icon icon="mdi:qrcode-scan" width="24" height="24"></iconify-icon>
 	</button>
 </div>
 <!-- svelte-ignore a11y-click-events-have-key-events -->

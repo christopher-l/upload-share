@@ -24,8 +24,8 @@
 <header>
 	{#if $backTarget || $downloadTarget || $createArchiveTarget}
 		<div class="left">
-			<a class="icon standard" href={$backTarget}>
-				<iconify-icon icon="mdi:arrow-left" width="36" height="36" />
+			<a aria-label="back" class="icon standard" href={$backTarget}>
+				<iconify-icon icon="mdi:arrow-left" width="36" height="36"></iconify-icon>
 			</a>
 		</div>
 	{/if}
@@ -35,12 +35,17 @@
 	{#if $backTarget || $downloadTarget || $createArchiveTarget}
 		<div class="right">
 			{#if $createArchiveTarget}
-				<button class="icon standard" on:click={onCreateArchive} aria-busy={waitingForArchive}>
-					<iconify-icon icon="mdi:folder-download" width="36" height="36" />
+				<button
+					aria-label="download all"
+					class="icon standard"
+					on:click={onCreateArchive}
+					aria-busy={waitingForArchive}
+				>
+					<iconify-icon icon="mdi:folder-download" width="36" height="36"></iconify-icon>
 				</button>
 			{:else}
-				<a class="icon standard" href={$downloadTarget} download>
-					<iconify-icon icon="mdi:download" width="36" height="36" />
+				<a aria-label="download" class="icon standard" href={$downloadTarget} download>
+					<iconify-icon icon="mdi:download" width="36" height="36"></iconify-icon>
 				</a>
 			{/if}
 		</div>
