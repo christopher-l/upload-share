@@ -13,15 +13,17 @@ export function showModal(dialog: HTMLDialogElement) {
 	dialog.showModal();
 }
 
-export function closeModal(dialog: HTMLDialogElement) {
+export function closeModal(dialog: HTMLDialogElement): Promise<void> {
 	const { documentElement: html } = document;
 	html.classList.add('modal-is-closing');
-	setTimeout(() => {
-		html.classList.remove('modal-is-open', 'modal-is-closing');
-		html.style.removeProperty('--pico-scrollbar-width');
-
-		dialog.close();
-	}, 400);
+	return new Promise((resolve) =>
+		setTimeout(() => {
+			html.classList.remove('modal-is-open', 'modal-is-closing');
+			html.style.removeProperty('--pico-scrollbar-width');
+			dialog.close();
+			resolve();
+		}, 400)
+	);
 }
 
 const getScrollbarWidth = () => {

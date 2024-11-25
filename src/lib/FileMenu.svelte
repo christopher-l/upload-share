@@ -61,6 +61,10 @@
 				action="?/delete"
 				use:enhance={() => {
 					deleting = true;
+					return async ({ update }) => {
+						await closeModal(dialog!);
+						update();
+					};
 				}}
 			>
 				<input hidden name="name" value={file.name} />
