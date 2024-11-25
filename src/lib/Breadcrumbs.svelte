@@ -29,3 +29,9 @@
 		</ul>
 	</nav>
 {/if}
+
+<style lang="scss">
+	li {
+		word-break: break-word;
+	}
+</style>

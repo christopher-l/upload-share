@@ -2,10 +2,11 @@
 	import QrCode from './QrCode.svelte';
 
 	interface Props {
+		title: string;
 		url: string;
 	}
 
-	let { url }: Props = $props();
+	let { title, url }: Props = $props();
 	let dialog: HTMLDialogElement | undefined = $state();
 
 	function onClick(event: MouseEvent) {
@@ -25,6 +26,9 @@
 <!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
 <dialog bind:this={dialog} onclick={(event) => event.target === dialog && dialog?.close()}>
 	<article>
+		<header>
+			<strong>{title}</strong>
+		</header>
 		<div class="qr-container">
 			<QrCode value={url} size={500} />
 		</div>
@@ -73,6 +77,9 @@
 		display: flex;
 		flex-direction: column;
 		width: unset;
+	}
+	header {
+		word-break: break-word;
 	}
 	.qr-container {
 		background-color: white;

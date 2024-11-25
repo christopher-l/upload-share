@@ -28,7 +28,7 @@
 	{#if data.hasUploadToken && $selectDestination}
 		<UploadHereButton />
 	{:else if data.hasUploadToken && data.virtualPath.length > 0}
-		<ShareUrl url={$page.url.toString()} />
+		<ShareUrl title={data.virtualPath[data.virtualPath.length - 1]} url={$page.url.toString()} />
 	{/if}
 
 	<Breadcrumbs filePath={data.virtualPath} />

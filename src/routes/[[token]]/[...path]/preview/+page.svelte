@@ -24,7 +24,10 @@
 
 <main class="container">
 	{#if data.hasUploadToken && !$page.url.searchParams.has('select-destination')}
-		<ShareUrl url={$page.url.toString().replace(/\/preview$/, '')} />
+		<ShareUrl
+			title={data.virtualPath[data.virtualPath.length - 1]}
+			url={$page.url.toString().replace(/\/preview$/, '')}
+		/>
 	{/if}
 
 	{#if data.mimetype?.startsWith('image/')}
