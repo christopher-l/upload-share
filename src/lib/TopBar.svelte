@@ -1,21 +1,24 @@
 <script lang="ts">
-	import { backTarget, downloadTarget, createArchiveTarget } from '$lib/stores';
 	import type { Snippet } from 'svelte';
 	interface Props {
 		currentItemName: string;
+		backTarget: string | null;
+		downloadTarget: string | null;
+		createArchiveTarget: string | null;
 		children: Snippet;
 	}
 
-	let { currentItemName, children }: Props = $props();
+	let { currentItemName, backTarget, downloadTarget, createArchiveTarget, children }: Props =
+		$props();
 
 	let waitingForArchive = $state(false);
 
 	async function onCreateArchive() {
-		console.log('onCreateArchive', $createArchiveTarget);
-		if (!$createArchiveTarget) return;
+		console.log('onCreateArchive', createArchiveTarget);
+		if (!createArchiveTarget) return;
 		waitingForArchive = true;
 		try {
-			const response = await fetch($createArchiveTarget, { method: 'PUT' });
+			const response = await fetch(createArchiveTarget, { method: 'PUT' });
 			const archiveDownloadLink = await response.text();
 			const linkElement = document.createElement('a');
 			linkElement.setAttribute('href', archiveDownloadLink);
@@ -28,9 +31,9 @@
 </script>
 
 <header>
-	{#if $backTarget || $downloadTarget || $createArchiveTarget}
+	{#if backTarget || downloadTarget || createArchiveTarget}
 		<div class="left">
-			<a aria-label="back" class="icon standard" href={$backTarget}>
+			<a aria-label="back" class="icon standard" href={backTarget}>
 				<iconify-icon icon="mdi:arrow-left" width="36" height="36"></iconify-icon>
 			</a>
 		</div>
@@ -38,9 +41,9 @@
 	<div class="center container">
 		{@render children()}
 	</div>
-	{#if $backTarget || $downloadTarget || $createArchiveTarget}
+	{#if backTarget || downloadTarget || createArchiveTarget}
 		<div class="right">
-			{#if $createArchiveTarget}
+			{#if createArchiveTarget}
 				<button
 					aria-label="download all"
 					class="icon standard"
@@ -50,7 +53,7 @@
 					<iconify-icon icon="mdi:folder-download" width="36" height="36"></iconify-icon>
 				</button>
 			{:else}
-				<a aria-label="download" class="icon standard" href={$downloadTarget} download>
+				<a aria-label="download" class="icon standard" href={downloadTarget} download>
 					<iconify-icon icon="mdi:download" width="36" height="36"></iconify-icon>
 				</a>
 			{/if}

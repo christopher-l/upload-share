@@ -3,7 +3,6 @@
 	import { page } from '$app/stores';
 	import ItemNav from '$lib/ItemNav.svelte';
 	import TopBar from '$lib/TopBar.svelte';
-	import { backTarget, createArchiveTarget, downloadTarget } from '$lib/stores';
 	import { getUrlPath } from '$lib/utils';
 	import type { Snippet } from 'svelte';
 	import type { PageData, RouteParams } from './$types';
@@ -19,22 +18,31 @@
 		data.virtualPath.length ? data.virtualPath[data.virtualPath.length - 1] : 'Upload Share'
 	);
 	let path = $derived(getUrlPath($page.params as RouteParams));
-	$effect(() => {
-		downloadTarget.set(data.downloadHref);
-	});
-	$effect(() => {
-		createArchiveTarget.set(data.createArchiveHref);
-	});
-	// Don't show the back button to the root directory for users without upload token.
-	$effect(() => {
+	/**
+	 * The href of the back button in the top nav bar. When null, the button
+	 * will be hidden.
+	 */
+	let backTarget = $derived.by(() => {
+		// Don't show the back button to the root directory for users without upload token.
 		if (path.split('/').length > 1) {
-			backTarget.set(`/${path.split('/').slice(0, -1).join('/')}`);
+			return `/${path.split('/').slice(0, -1).join('/')}`;
 		} else if (data.hasUploadToken && path.length > 0) {
-			backTarget.set('/');
+			return '/';
 		} else {
-			backTarget.set(null);
+			return null;
 		}
 	});
+	/**
+	 * The href of the download button in the top nav bar. When null, the button
+	 * will be hidden.
+	 */
+	let downloadTarget = $derived(data.downloadHref);
+	/**
+	 * The href of the download button in the top nav bar for folders. The href
+	 * is a link to an endpoint that creates the archive when called and returns
+	 * the archive's download link.
+	 */
+	let createArchiveTarget = $derived(data.createArchiveHref);
 </script>
 
 <svelte:head>
@@ -44,7 +52,7 @@
 	{/if}
 </svelte:head>
 
-<TopBar currentItemName={title}>
+<TopBar currentItemName={title} {backTarget} {downloadTarget} {createArchiveTarget}>
 	<ItemNav navLinks={data.navLinks} currentItemName={title} />
 </TopBar>
 
