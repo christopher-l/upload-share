@@ -16,6 +16,10 @@ const config = {
 		csrf: {
 			checkOrigin: false
 		}
+	},
+
+	compilerOptions: {
+		runes: true,
 	}
 };
 
