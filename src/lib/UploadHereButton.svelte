@@ -22,7 +22,7 @@
 		align-items: center;
 		justify-content: center;
 		margin-bottom: var(--pico-spacing);
-		background-color: var(--pico-form-element-valid-border-color);
-		border-color: var(--pico-form-element-valid-active-border-color);
+		background-color: var(--pico-form-element-valid-focus-color);
+		border-color: var(--pico-form-element-valid-border-color);
 	}
 </style>

@@ -190,8 +190,9 @@
 	details.dropdown summary {
 		text-align: center;
 		&.dragging {
-			color: var(--pico-color);
+			color: var(--pico-mark-color);
 			background-color: var(--pico-form-element-valid-focus-color);
+			border-color: var(--pico-form-element-valid-border-color);
 			&::after {
 				visibility: hidden;
 			}
