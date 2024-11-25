@@ -39,6 +39,6 @@
 		"file-type": "^19.6.0",
 		"iconify-icon": "^2.1.0",
 		"mime": "^4.0.4",
-		"svelte-qrcode": "^1.0.1"
+		"qrious": "^4.0.2"
 	}
 }

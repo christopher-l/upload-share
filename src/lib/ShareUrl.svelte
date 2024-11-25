@@ -1,6 +1,5 @@
 <script lang="ts">
-	// @ts-ignore
-	import QrCode from 'svelte-qrcode';
+	import QrCode from './QrCode.svelte';
 
 	interface Props {
 		url: string;
@@ -27,7 +26,7 @@
 <dialog bind:this={dialog} onclick={(event) => event.target === dialog && dialog?.close()}>
 	<article>
 		<div class="qr-container">
-			<QrCode value={url} size="500" />
+			<QrCode value={url} size={500} />
 		</div>
 		<footer>
 			<button class="secondary" onclick={() => dialog?.close()}>Close</button>
