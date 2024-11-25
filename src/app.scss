@@ -1,4 +1,3 @@
-
 html {
 	height: 100%;
 }
@@ -43,7 +42,8 @@ a {
 			background-color: var(--pico-secondary-focus);
 		}
 		&:focus {
-			--pico-box-shadow: var(--pico-button-hover-box-shadow, 0 0 0 rgba(0, 0, 0, 0)), 0 0 0 var(--pico-outline-width) var(--pico-secondary-focus);
+			--pico-box-shadow: var(--pico-button-hover-box-shadow, 0 0 0 rgba(0, 0, 0, 0)),
+				0 0 0 var(--pico-outline-width) var(--pico-secondary-focus);
 		}
 	}
 	&.standard.danger {
@@ -58,5 +58,12 @@ a {
 		width: unset;
 		margin: unset;
 		padding: calc(var(--pico-spacing) / 2);
+	}
+}
+
+@keyframes modal {
+	from {
+		transform: translateY(-10vh);
+		opacity: 0;
 	}
 }

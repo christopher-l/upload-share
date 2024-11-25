@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { closeModal, showModal } from './modal';
 	import QrCode from './QrCode.svelte';
 
 	interface Props {
@@ -18,13 +19,13 @@
 
 <div class="container">
 	<input readonly value={url} onclick={onClick} />
-	<button aria-label="show qr code" class="secondary" onclick={() => dialog?.showModal()}>
+	<button aria-label="show qr code" class="secondary show-qr" onclick={() => showModal(dialog!)}>
 		<iconify-icon icon="mdi:qrcode-scan" width="24" height="24"></iconify-icon>
 	</button>
 </div>
 <!-- svelte-ignore a11y_click_events_have_key_events -->
 <!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
-<dialog bind:this={dialog} onclick={(event) => event.target === dialog && dialog?.close()}>
+<dialog bind:this={dialog} onclick={(event) => event.target === dialog && closeModal(dialog)}>
 	<article>
 		<header>
 			<strong>{title}</strong>
@@ -33,7 +34,7 @@
 			<QrCode value={url} size={500} />
 		</div>
 		<footer>
-			<button class="secondary" onclick={() => dialog?.close()}>Close</button>
+			<button class="secondary" onclick={() => closeModal(dialog!)}>Close</button>
 		</footer>
 	</article>
 </dialog>
@@ -67,11 +68,10 @@
 		background-repeat: no-repeat;
 		cursor: pointer;
 	}
-	button {
-		display: grid;
-		iconify-icon {
-			margin: auto;
-		}
+	button.show-qr {
+		display: flex;
+		justify-content: center;
+		align-items: center;
 	}
 	article {
 		display: flex;

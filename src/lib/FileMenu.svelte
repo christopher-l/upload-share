@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { enhance } from '$app/forms';
+	import { closeModal, showModal } from './modal';
 	import type { FileListEntry } from './types';
 
 	interface Props {
@@ -13,7 +14,7 @@
 	let deleting = $state(false);
 
 	function confirmDelete(): void {
-		dialog?.showModal();
+		showModal(dialog!);
 		details?.removeAttribute('open');
 	}
 </script>
@@ -38,7 +39,7 @@
 
 <!-- svelte-ignore a11y_click_events_have_key_events -->
 <!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
-<dialog bind:this={dialog} onclick={(event) => event.target === dialog && dialog?.close()}>
+<dialog bind:this={dialog} onclick={(event) => event.target === dialog && closeModal(dialog)}>
 	<article>
 		<header>
 			<strong>Delete {file.name}</strong>
@@ -52,7 +53,9 @@
 		</p>
 		<footer>
 			<!-- svelte-ignore a11y_invalid_attribute -->
-			<button class="secondary" disabled={deleting} onclick={() => dialog?.close()}>Cancel</button>
+			<button class="secondary" disabled={deleting} onclick={() => closeModal(dialog!)}
+				>Cancel</button
+			>
 			<form
 				method="POST"
 				action="?/delete"
@@ -94,6 +97,9 @@
 		}
 	}
 	dialog {
+		header {
+			word-break: break-word;
+		}
 		article {
 			min-width: min(90vw, 600px);
 		}
