@@ -37,8 +37,9 @@ function uploadFile(file: File): Promise<void> {
 	};
 	const progress = tweened(0, { easing: cubicOut });
 	const unsubscribe = progress.subscribe((progress) => {
-		fileEntry.progress = progress;
-		uploadingFilesStore.update((uploadingFiles) => uploadingFiles);
+		uploadingFilesStore.update((uploadingFiles) =>
+			updateFileEntry(uploadingFiles, { ...fileEntry, progress })
+		);
 	});
 	function onProgress(event: ProgressEvent): void {
 		progress.set(event.loaded / event.total);
@@ -52,20 +53,44 @@ function uploadFile(file: File): Promise<void> {
 			if (ajax.status === 200) {
 				resolve();
 			} else {
-				fileEntry.progress = 1;
-				fileEntry.abort = undefined;
-				fileEntry.error = true;
-				uploadingFilesStore.update((uploadingFiles) => uploadingFiles);
+				uploadingFilesStore.update((uploadingFiles) =>
+					updateFileEntry(uploadingFiles, {
+						...fileEntry,
+						progress: 1,
+						abort: undefined,
+						error: true
+					})
+				);
 				reject(ajax.statusText);
 			}
 		});
 		ajax.addEventListener('error', (e) => {
-			fileEntry.error = true;
-			uploadingFilesStore.update((uploadingFiles) => uploadingFiles);
+			uploadingFilesStore.update((uploadingFiles) =>
+				updateFileEntry(uploadingFiles, { ...fileEntry, error: true })
+			);
 			reject(e);
 		});
 		ajax.addEventListener('abort', () => resolve());
 		ajax.open('POST', '?/upload');
 		ajax.send(formdata);
 	}).finally(unsubscribe);
+}
+
+function updateFileEntry(
+	list: FileListEntry[] | null,
+	entry: FileListEntry
+): FileListEntry[] | null {
+	if (list == null) {
+		return list;
+	}
+	const key = getFileEntryKey(entry);
+	const index = list.findIndex((item) => getFileEntryKey(item) === key);
+	if (index !== -1) {
+		list[index] = entry;
+	}
+	return list;
+}
+
+function getFileEntryKey(fileEntry: FileListEntry): string {
+	return fileEntry.token ?? fileEntry.name;
 }
