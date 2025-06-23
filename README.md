@@ -33,12 +33,27 @@ The file can be used for developing and production builds. However, build-time v
 
 ## Building Docker Images
 
+### Docker
+
 ```bash
 # Current platform
 docker build . -t upload-share --pull
 # Arm64
 docker run --rm --privileged multiarch/qemu-user-static --reset -p yes
 docker build . -t upload-share --platform=linux/arm64 --pull
+```
+
+### Podman
+
+```bash
+# Current platform
+podman build . -t upload-share --pull
+# Setup multiarch (Arch Linux)
+sudo pacman -S qemu-user-static qemu-user-static-binfmt
+sudo systemctl start systemd-binfmt.service
+reboot
+# Build for Arm64
+podman build . -t upload-share --platform=linux/arm64 --pull
 ```
 
 ## Save and Load Docker Image from File
